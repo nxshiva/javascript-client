@@ -227,7 +227,7 @@ span {
 
 .cart_block>div:nth-child(5)>div:nth-child(2)>p {
     text-align: right;
-    font-size: medium;
+    font-size: small;
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -237,7 +237,7 @@ span {
     margin-top: 3%;
 }
 
-.cart_block>div:nth-child(6)>div:nth-child(2) {
+.cart_block>div:nth-child(6)>div:nth-child(2)>p {
     text-align: right;
     font-size: small;
     margin-top: auto;
