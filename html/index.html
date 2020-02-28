@@ -12,38 +12,38 @@
 </head>
 
 <body>
-    <div class="flex-container-column">
-        <div class="flex-container-row pad">
-            <div class="dark">Checkbox</div>
-            <div class="flexgrow">
+    <div class="main_block">
+        <div class="main_block_upper">
+            <div class="bold">Checkbox</div>
+            <div class="upper_breadcrumb">
                 <ul class="breadcrumb">
                     <li><a href="#">Shipping</a></li>
-                    <li class="dark"><a href="#">Payment Method</a></li>
+                    <li class="bold"><a href="#">Payment Method</a></li>
                     <li>Conformation</li>
                 </ul>
             </div>
             <div><i class="fa fa-close"></i></div>
         </div>
-        <div class="flex-container-row down">
-            <div class="payment_block pad">
-                <span>Wallet</span>
+        <div class="main_block_payment">
+            <div class="payment_block">
+                <div><span>Wallet</span></div>
                 <div class="payment_block_cards">
                     <div>
-                        <img src="./../images/cards/discover.png" alt="discovercard" class="payment_block_cards_img">
+                        <img src="./../images/cards/discover.png" alt="discovercard">
                         <p>Ending with 8899</p>
                     </div>
                     <div>
-                        <img src="./../images/cards/mastercard.png" alt="mastercard" class="payment_block_cards_img">
+                        <img src="./../images/cards/mastercard.png" alt="mastercard">
                         <p>Ending with 8899</p>
                     </div>
                     <div>
-                        <img src="./../images/cards/visa.png" alt="visacard" class="payment_block_cards_img">
+                        <img src="./../images/cards/visa.png" alt="visacard">
                         <p>Ending with 8899</p>
                     </div>
                 </div>
-                <span>New Card</span>
-                <div class="new_card">
-                    <div class="center">
+                <div><span>New Card</span></div>
+                <div class="payment_block_new_card">
+                    <div class="new_card-center">
                         <form action="#">
                             <input type="text" id="fname" name="firstname" placeholder="Name on Card">
                             <input type="text" id="lname" name="lastname" placeholder="XXXX-XXXX-XXXX-XXXX">
@@ -54,53 +54,54 @@
                     </div>
                 </div>
             </div>
-
-            <div class="cart_block pad">
-                <div>
-                    <div><img src="./../images/products/mobile-holder.jpg" alt="mastercard"></div>
-                    <div>
-                        <p>Mobile Holder</p>
-                        <p>Black</p>
-                        <p>Quantity : 1</p>
+            <div class="payment_cart">
+                <div class="cart_block">
+                    <div class="cart_mobile_holder">
+                        <div><img src="./../images/products/mobile-holder.jpg" alt="mobile-holder"></div>
+                        <div>
+                            <p>Mobile Holder</p>
+                            <p>Black</p>
+                            <p>Quantity : 1</p>
+                        </div>
+                        <div>
+                            $ 10.00
+                        </div>
                     </div>
-                    <div>
-                        $ 10.00
+                    <div class="cart_rado">
+                        <div><img src="./../images/products/rado.jpg" alt="rado"></div>
+                        <div>
+                            <p>Rado Watch</p>
+                            <p>Black</p>
+                            <p>Quantity : 1</p>
+                        </div>
+                        <div>
+                            $ 10.00
+                        </div>
+                    </div>
+                    <div class="cart_micro">
+                        <div><img src="./../images/products/usb-c-2-micro.jpeg" alt="micro"></div>
+                        <div>
+                            <p>C type to Micro Convertor</p>
+                            <p>Black</p>
+                            <p>Quantity : 1</p>
+                        </div>
+                        <div>
+                            $ 10.00
+                        </div>
+                    </div>
+                    <div class="cart_hard_case">
+                        <div><img src="./../images/products/hard-case.jpg" alt="hard-case"></div>
+                        <div>
+                            <p>Mobile Case</p>
+                            <p>Black</p>
+                            <p>Quantity : 1</p>
+                        </div>
+                        <div>
+                            $ 10.00
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div><img src="./../images/products/rado.jpg" alt="mastercard"></div>
-                    <div>
-                        <p>Rado Watch</p>
-                        <p>Black</p>
-                        <p>Quantity : 1</p>
-                    </div>
-                    <div>
-                        $ 10.00
-                    </div>
-                </div>
-                <div>
-                    <div><img src="./../images/products/usb-c-2-micro.jpeg" alt="mastercard"></div>
-                    <div>
-                        <p>C type to Micro Convertor</p>
-                        <p>Black</p>
-                        <p>Quantity : 1</p>
-                    </div>
-                    <div>
-                        $ 10.00
-                    </div>
-                </div>
-                <div>
-                    <div><img src="./../images/products/hard-case.jpg" alt="mastercard"></div>
-                    <div>
-                        <p>Mobile Case</p>
-                        <p>Black</p>
-                        <p>Quantity : 1</p>
-                    </div>
-                    <div>
-                        $ 10.00
-                    </div>
-                </div>
-                <div>
+                <div class="cart_billing">
                     <div>
                         <p>Sub Total</p>
                         <p>Shipping</p>
@@ -112,7 +113,7 @@
                         <p>$ 50.00</p>
                     </div>
                 </div>
-                <div>
+                <div class="cart_total">
                     <div>
                         <p>Total</p>
                     </div>

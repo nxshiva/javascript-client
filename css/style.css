@@ -5,29 +5,34 @@ body {
     background-image: url("./../images/background/background.jpg");
 }
 
-.flex-container-column {
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    border-width: .1px;
-    border-style: solid;
-    border-color: lightgrey;
-    box-shadow: 8px 8px 5px grey;
-    margin: 10%;
+div {
+    padding: 1%;
 }
 
-.flex-container-row {
+span {
+    font-size: medium;
+    color: gray;
+}
+
+.main_block {
+    display: flex;
+    flex-direction: column;
+    margin: 4%;
+    background-color: white;
+}
+
+.main_block_upper {
     display: flex;
     flex-direction: row;
 }
 
-.flexgrow {
-    flex-grow: 2;
-    margin-left: 10%;
+.bold {
+    font-weight: bold;
 }
 
-ul.breadcrumb {
-    list-style: none;
+.upper_breadcrumb {
+    flex-grow: 2;
+    margin-left: 10%;
 }
 
 ul.breadcrumb li {
@@ -49,27 +54,16 @@ ul.breadcrumb li a:hover {
     color: #01447e;
 }
 
+.main_block_payment {
+    display: flex;
+    flex-direction: row;
+    /* border-width: .1px;
+    border-style: solid;
+    border-color: lightgrey; */
+}
+
 .payment_block {
     flex-grow: 2;
-}
-
-.cart_block {
-    flex-grow: 1;
-    background-color: #F2F3F4;
-}
-
-.dark {
-    font-weight: bold;
-}
-
-.pad {
-    padding: 9px;
-}
-
-.down {
-    border-width: .1px;
-    border-style: solid;
-    border-color: lightgrey;
 }
 
 .payment_block_cards {
@@ -85,10 +79,9 @@ ul.breadcrumb li a:hover {
     padding: 1%;
 }
 
-.payment_block_cards_img {
+.payment_block_cards>div>img {
     display: block;
     margin: auto;
-    margin-top: 10%;
     height: 60%;
     width: 70%;
 }
@@ -101,6 +94,21 @@ ul.breadcrumb li a:hover {
 
 .payment_block_cards>div:hover {
     box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
+
+.payment_block_new_card {
+    border: 1px;
+    border-left: 0px;
+    border-bottom: 0px;
+    border-right: 0px;
+    border-style: solid;
+    border-color: lightgrey;
+}
+
+.new_card-center {
+    margin: auto;
+    width: 50%;
+    padding: 5%;
 }
 
 input[type=text] {
@@ -136,24 +144,9 @@ form>input[type=text]:nth-child(4) {
     width: 50%;
 }
 
-.center {
-    margin: auto;
-    width: 50%;
-    padding: 5%;
-}
-
-.new_card {
-    border: 1px;
-    border-left: 0px;
-    border-bottom: 0px;
-    border-right: 0px;
-    border-style: solid;
-    border-color: lightgrey;
-}
-
-span {
-    font-size: medium;
-    color: gray;
+.payment_cart {
+    flex-grow: 1;
+    background-color: #F2F3F4;
 }
 
 .cart_block>div {
@@ -165,20 +158,18 @@ span {
     border-right: 0px;
     border-style: solid;
     border-color: gray;
-    padding: .5%;
     width: auto;
     height: 15%;
 }
 
-.cart_block>div:nth-child(1) {
-    border: 0px;
-}
-
 .cart_block>div>div {
-    padding: .5%;
     width: 50%;
     height: 95%;
     object-fit: cover;
+}
+
+.cart_mobile_holder {
+    border: 0px;
 }
 
 .cart_block>div>div:nth-child(1) {
@@ -214,30 +205,57 @@ span {
     font-size: small;
 }
 
-.cart_block>div:nth-child(5) {
-    flex-direction: row;
+.cart_billing {
+    display: flex;
     font-size: small;
     margin-top: 10%;
+    border: 1px;
+    border-left: 0px;
+    border-bottom: 0px;
+    border-right: 0px;
+    border-style: solid;
+    border-color: gray;
 }
 
-.cart_block>div:nth-child(5)>div:nth-child(1)>p {
+.cart_billing>div {
+    flex-grow: 1;
+}
+
+.cart_billing>div:nth-child(1)>p {
     margin-top: auto;
     margin-bottom: auto;
 }
 
-.cart_block>div:nth-child(5)>div:nth-child(2)>p {
+.cart_billing>div:nth-child(2) {
     text-align: right;
     font-size: small;
     margin-top: auto;
     margin-bottom: auto;
 }
 
-.cart_block>div:nth-child(6)>div:nth-child(1)>p {
+.cart_total {
+    display: flex;
+    font-size: small;
+    font-weight: bold;
+    margin-top: 10%;
+    border: 1px;
+    border-left: 0px;
+    border-bottom: 0px;
+    border-right: 0px;
+    border-style: solid;
+    border-color: gray;
+}
+
+.cart_total>div {
+    flex-grow: 1;
+}
+
+.cart_total>div:nth-child(1)>p {
     font-size: small;
     margin-top: 3%;
 }
 
-.cart_block>div:nth-child(6)>div:nth-child(2)>p {
+.cart_total>div:nth-child(2)>p {
     text-align: right;
     font-size: small;
     margin-top: auto;
