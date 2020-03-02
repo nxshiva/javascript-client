@@ -18,6 +18,7 @@ span {
     display: flex;
     flex-direction: column;
     margin: 4%;
+    padding: 0%;
     background-color: white;
 }
 
@@ -57,6 +58,7 @@ ul.breadcrumb li a:hover {
 .main_block_payment {
     display: flex;
     flex-direction: row;
+    padding: 0%;
     /* border-width: .1px;
     border-style: solid;
     border-color: lightgrey; */
@@ -260,4 +262,60 @@ form>input[type=text]:nth-child(4) {
     font-size: small;
     margin-top: auto;
     margin-bottom: auto;
+}
+
+@media only screen and (min-width: 992px) {
+    .main_block {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .main_block {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 992px) {
+    .payment_block {
+        flex-grow: 1;
+    }
+    .payment_cart {
+        flex-grow: 1;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .main_block_payment {
+        flex-direction: column-reverse;
+    }
+    .payment_cart {
+        width: 98%;
+    }
+    .payment_block {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .payment_block_cards {
+        flex-direction: column;
+    }
+    .payment_block_cards>div {
+        width: 100%;
+    }
+    .payment_block_cards>div>img {
+        display: block;
+        margin: auto;
+        height: 60%;
+        width: 95%;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .breadcrumb {
+        display: none;
+    }
 }
