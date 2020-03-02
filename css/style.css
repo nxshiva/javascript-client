@@ -18,6 +18,7 @@ span {
     display: flex;
     flex-direction: column;
     margin: 4%;
+    padding: 0%;
     background-color: white;
 }
 
@@ -57,6 +58,7 @@ ul.breadcrumb li a:hover {
 .main_block_payment {
     display: flex;
     flex-direction: row;
+    padding: 0%;
     /* border-width: .1px;
     border-style: solid;
     border-color: lightgrey; */
