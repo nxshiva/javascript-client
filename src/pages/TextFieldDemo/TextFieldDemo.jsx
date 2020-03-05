@@ -1,5 +1,5 @@
 import React from 'react';
-import TextField from '../../components/index';
+import { TextField } from '../../components/index';
 import { Para } from '../../components/TextField/style';
 
 export default function TextFieldDemo() {
