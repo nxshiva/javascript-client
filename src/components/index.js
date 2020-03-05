@@ -1,4 +1,8 @@
 import TextField from './TextField/index';
-import Slider from './Slider/index';
+import SelectField from './SelectField/index';
+import RadioGroup from './RadioGroup/index';
 
-export { TextField, Slider };
+
+export {
+  TextField, SelectField, RadioGroup,
+};

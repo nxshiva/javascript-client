@@ -1,15 +1,26 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Input, { P } from './style';
 
 export default function TextField(props) {
-  // eslint-disable-next-line react/prop-types
-  const { value, disabled, error } = props;
+  const { onChange, error, value } = props;
   return (
     <>
-      <Input type="text" value={value} disabled={(disabled)} />
+      <Input type="text" onChange={onChange} value={value} />
       <P>
         {error}
       </P>
     </>
   );
 }
+
+TextField.propTypes = {
+//  value: PropTypes.string.isRequired,
+  error: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
+};
+
+TextField.defaultProps = {
+  error: '',
+};

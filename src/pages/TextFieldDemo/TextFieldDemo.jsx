@@ -1,5 +1,9 @@
 import React from 'react';
+<<<<<<< HEAD
+import { TextField } from '../../components/index';
+=======
 import { TextField, Slider } from '../../components/index';
+>>>>>>> 9d5604de1ab789ff22acb57af529807ef23b3e03
 import { Para } from '../../components/TextField/style';
 // import { banners } from '../../configs/constant';
 
