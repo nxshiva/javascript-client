@@ -25,12 +25,14 @@ export default function SelectField(props) {
 
 SelectField.propTypes = {
   error: PropTypes.string,
-  options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  defaultText: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.object),
+  defaultText: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   values: PropTypes.string.isRequired,
 };
 
 SelectField.defaultProps = {
   error: '',
+  options: [],
+  defaultText: 'select',
 };
