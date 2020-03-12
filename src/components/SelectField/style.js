@@ -14,6 +14,7 @@ const Select = styled.select`
 const Options = styled.option`
   width: 100%;
   padding: 12px 20px;
+  height: 10px;
   margin: 8px 0;
   display: inline-block;
   border: 1px solid #ccc;
@@ -34,6 +35,7 @@ const Div = styled.div`
 
 const P = styled.p`
      color: red;
+     margin: auto;
 `;
 
 export default Select;

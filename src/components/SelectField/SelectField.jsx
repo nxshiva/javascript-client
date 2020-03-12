@@ -4,11 +4,11 @@ import Select, { P, Options } from './style';
 
 export default function SelectField(props) {
   const {
-    defaultText, options, error, onChange, values,
+    defaultText, options, error, onChange, values, onBlur,
   } = props;
   return (
     <>
-      <Select value={values} onChange={onChange}>
+      <Select name="Sport" value={values} onChange={onChange} onBlur={onBlur}>
         {defaultText && <Options>{defaultText}</Options>}
         {
           options && options.length && options.map(({ value, label }) => (
@@ -25,12 +25,15 @@ export default function SelectField(props) {
 
 SelectField.propTypes = {
   error: PropTypes.string,
-  options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  defaultText: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.object),
+  defaultText: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   values: PropTypes.string.isRequired,
+  onBlur: PropTypes.bool.isRequired,
 };
 
 SelectField.defaultProps = {
   error: '',
+  options: [],
+  defaultText: 'select',
 };
