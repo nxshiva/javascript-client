@@ -1,94 +1,124 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Math } from '../../components/index';
 
-const CalculatorDemo = () => (
-  <>
-    <Math first={10} second={20} operator="+" />
-    <Math first={10} second={20} operator="-" />
-    <Math first={10} second={20} operator="*" />
-    <Math first={20} second={10} operator="/" />
-    <Math first={20} second={0} operator="*">
-      {(first, second, operator, result) => {
-        switch (operator) {
-        case '+': return (
-          <p>
-            Addition of
-            {' '}
-            {first}
-            {' '}
-            and
-            {' '}
-            {second}
-            {' '}
-            is
-            {' '}
-            {result}
-          </p>
-        );
-        case '-': return (
-          <p>
-            Subtraction of
-            {' '}
-            {first}
-            {' '}
-            and
-            {' '}
-            {second}
-            {' '}
-            is
-            {' '}
-            {result}
-          </p>
-        );
-        case '*': return (
-          <p>
-            Multiplication of
-            {' '}
-            {first}
-            {' '}
-            and
-            {' '}
-            {second}
-            {' '}
-            is
-            {' '}
-            {result}
-          </p>
-        );
-        case '/': return (
-          <p>
-            Division of
-            {' '}
-            {first}
-            {' '}
-            and
-            {' '}
-            {second}
-            {' '}
-            is
-            {' '}
-            {result}
-          </p>
-        );
-        default: return (
-          <p>
-            {' '}
-            {first}
-            {' '}
-            {operator}
-            {' '}
-            {second}
-            {' '}
-            {'='}
-            {' '}
-            {result}
-          </p>
-        );
-        }
-      }}
-    </Math>
+class ChildrenDemo extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { };
+  }
 
-  </>
-);
+children = (first, second, operator, result) => {
+  switch (operator) {
+  case '+': {
+    return (
+      <p>
+        Sum of
+        {' '}
+        {' '}
+        {first}
+        {' '}
+        {' '}
+        and
+        {' '}
+        {second}
+        {' '}
+        is
+        {' '}
+        {' '}
+        {result}
+      </p>
+    );
+  }
+  case '-': {
+    return (
+      <p>
+        Subtraction of
+        {' '}
+        {' '}
+        { first }
+        {' '}
+        and
+        {' '}
+        {second}
+        {' '}
+        is
+        {' '}
+        {' '}
+        {result}
+      </p>
+    );
+  }
+  case '*': {
+    return (
+      <p>
+        Multiplication of
+        {' '}
+        {' '}
+        {' '}
+        {first}
+        {' '}
+        and
+        {' '}
+        {' '}
+        {second}
+        {' '}
+        is
+        {' '}
+        {' '}
+        {result}
+      </p>
+    );
+  }
+  case '/': {
+    return (
+      <p>
+        Division of
+        {' '}
+        {' '}
+        {first}
+        {' '}
+        and
+        {' '}
+        {second}
+        {' '}
+        is
+        {' '}
+        {' '}
+        {result}
+      </p>
+    );
+  }
+  default: {
+    return (
+      <p>
+        {' '}
+        {' '}
+        {first}
+        {' '}
+        {operator}
+        {' '}
+        {second}
+        {' '}
+        is
+        {' '}
+        {' '}
+        {result}
+      </p>
+    );
+  }
+  }
+}
 
-export default CalculatorDemo;
+render() {
+  return (
+    <>
+      <Math first={7} second={4} operator="+">{this.children}</Math>
+      <Math first={7} second={3} operator="-">{this.children}</Math>
+      <Math first={7} second={4} operator="*">{this.children}</Math>
+      <Math first={7} second={4} operator="/" />
+    </>
+  );
+}
+}
+
+export default ChildrenDemo;
