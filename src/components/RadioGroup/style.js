@@ -40,6 +40,7 @@ const Div = styled.div`
 
 const P = styled.p`
      color: red;
+     margin: auto;
 `;
 
 export default Input;
