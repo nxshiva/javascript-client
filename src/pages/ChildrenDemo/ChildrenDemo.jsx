@@ -4,7 +4,7 @@ import { Math } from '../../components/index';
 const CalculatorDemo = () => (
   <>
     <Math first={10} second={20} operator="+" />
-    <Math first={20} second={10} operator="-" />
+    <Math first={10} second={20} operator="-" />
     <Math first={10} second={20} operator="*" />
     <Math first={20} second={10} operator="/" />
     <Math first={20} second={0} operator="*">
@@ -12,7 +12,7 @@ const CalculatorDemo = () => (
         switch (operator) {
         case '+': return (
           <p>
-            Sum of
+            Addition of
             {' '}
             {first}
             {' '}
@@ -87,6 +87,7 @@ const CalculatorDemo = () => (
         }
       }}
     </Math>
+
   </>
 );
 
