@@ -12,7 +12,7 @@
         "react-native-material-textfield": "^0.16.1",
         "react-scripts": "3.4.0",
         "styled-components": "^5.0.1",
-        "yup": "^0.28.2"
+        "yup": "^0.28.3"
     },
     "scripts": {
         "start": "react-scripts start",

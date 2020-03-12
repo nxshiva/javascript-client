@@ -1,8 +1,7 @@
 import React from 'react';
-import { TextField } from '../../components/index';
+import { TextField, Slider } from '../../components/index';
 import { Para } from '../../components/TextField/style';
 import { banners } from '../../configs/constant';
-import Slider from '../../components/Slider/index';
 
 export default function TextFieldDemo() {
   return (

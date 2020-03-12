@@ -46,3 +46,7 @@ export const Buttons = styled.button`
 
       `};
 `;
+
+export const Div = styled.div`
+      align:right;
+`;

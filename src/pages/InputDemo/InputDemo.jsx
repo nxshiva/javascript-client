@@ -10,9 +10,6 @@ import { SelectOptions, radioOptionsCricket, radioOptionsFootball } from '../../
 class InputDemo extends Component {
   constructor(props) {
     super(props);
-    this.nameTouched = false;
-    this.sportTouched = false;
-    this.whatyoudoTouched = false;
     this.schema = yup.object().shape({
       name: yup.string().required('Please enter your name').min(3, 'Please enter no less than 3 characters'),
       sport: yup.string().required('Please select a sport'),
@@ -30,6 +27,12 @@ class InputDemo extends Component {
       sport: '',
       cricket: '',
       football: '',
+      touched: {
+        name: false,
+        sport: false,
+        cricket: false,
+        football: false,
+      },
     };
   }
 
@@ -79,16 +82,23 @@ class InputDemo extends Component {
   }
 
   isTouched = (field) => {
-    if (field === 'name') {
-      this.nameTouched = true;
-    }
+    const { touched } = this.state;
+    console.log('field', field);
+    this.setState({
+      touched: {
+        ...touched,
+        [field]: true,
+      },
+    });
   }
 
   getError = (field) => {
-    try {
-      this.schema.validateSyncAt(field, this.state);
-    } catch (err) {
-      return err.message;
+    if (this.state.touched[field] && this.hasErrors()) {
+      try {
+        this.schema.validateSyncAt(field, this.state);
+      } catch (err) {
+        return err.message;
+      }
     }
   };
 
@@ -99,13 +109,13 @@ class InputDemo extends Component {
       <form>
         <Para>Name</Para>
 
-        <TextField onChange={this.onChangeTextField} value={name} error={this.getError('name')} />
+        <TextField onChange={this.onChangeTextField} value={name} error={this.getError('name')} onBlur={() => this.isTouched('name')} />
         <Para>Select the game you play?</Para>
-        <SelectField defaultText="select" options={SelectOptions} onChange={this.onChangeSelectField} values={sport} error={this.getError('sport')} />
+        <SelectField defaultText="select" options={SelectOptions} onChange={this.onChangeSelectField} values={sport} error={this.getError('sport')} onBlur={() => this.isTouched('sport')} />
         {sport && (sport === 'cricket' || sport === 'football') && (
           <>
             <Para>What you do?</Para>
-            <RadioGroup options={this.getRadioOptions()} onChange={this.onChangeRadioGroup} error={this.getError(sport)} />
+            <RadioGroup options={this.getRadioOptions()} onChange={this.onChangeRadioGroup} error={this.getError(sport)} onBlur={() => this.isTouched(sport)} />
           </>
         )}
         <div align="right">

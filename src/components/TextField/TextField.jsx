@@ -9,7 +9,7 @@ export default function TextField(props) {
   console.log('TextField', error);
   return (
     <>
-      <Input type="text" onChange={onChange} value={value} onClick={onmouchenter} onBlur={onBlur} />
+      <Input type="text" onChange={onChange} name="Name" value={value} onClick={onmouchenter} onBlur={onBlur} />
       <P>
         {error}
       </P>
@@ -23,7 +23,7 @@ TextField.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string.isRequired,
   onmouchenter: PropTypes.func.isRequired,
-  onBlur: PropTypes.bool.isRequired,
+  onBlur: PropTypes.func.isRequired,
 };
 
 TextField.defaultProps = {

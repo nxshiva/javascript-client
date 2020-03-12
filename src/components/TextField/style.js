@@ -25,6 +25,12 @@ const Input = styled.input`
       background-color: white;
       border-color: #D35400;
     `};
+    ${(props) => props.error
+      && css`
+        width: 100%;
+        background-color: white;
+        border-color: red;
+      `};
 `;
 
 const Para = styled.p`
