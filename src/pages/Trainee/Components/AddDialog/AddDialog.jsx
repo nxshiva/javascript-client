@@ -196,7 +196,14 @@ class AddDialog extends Component {
           <Button onClick={onClose} color="primary">
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={onSubmit()} disabled={hasError}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => onSubmit()({
+              name, email, password, confirmPassword,
+            })}
+            disabled={hasError}
+          >
             Submit
           </Button>
         </DialogActions>
