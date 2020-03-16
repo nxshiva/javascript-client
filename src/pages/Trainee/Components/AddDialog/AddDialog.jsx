@@ -63,7 +63,6 @@ class AddDialog extends Component {
     schema
       .isValid(this.state)
       .then((valid) => {
-        console.log('hasError', hasError);
         if (!valid !== hasError) {
           this.setState({ hasError: !valid });
         }
