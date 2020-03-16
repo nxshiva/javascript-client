@@ -25,18 +25,23 @@ class Trainee extends Component {
     this.setState({ open });
   };
 
-  onSubmit = () => {
-
+  onSubmit = (data) => {
+    const { open } = this.state;
+    this.setState({ open: false }, () => {
+      console.log(data);
+    });
+    return open;
   }
 
   render() {
+    const { open } = this.state;
     console.log(this.state);
     return (
       <div>
         <Button variant="outlined" color="primary" onClick={this.onOpen}>
           ADD TRAINEE
         </Button>
-        <AddDialog open={this.state.open} onClose={this.onClose} onSubmit={this.onSubmit} />
+        <AddDialog open={open} onClose={this.onClose} onSubmit={() => this.onSubmit} />
       </div>
     );
   }
