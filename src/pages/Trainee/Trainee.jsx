@@ -1,29 +1,28 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
-import AddDialog from './Components/index';
-import NavBar from '../components/index';
 import { withStyles } from '@material-ui/core/styles';
+import AddDialog from './Components/index';
 
 const useStyles = (theme) => ({
   button: {
-      marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2),
   },
   paper: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-    avatar: {
-      margin: theme.spacing(1),
-      backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
-      width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(1),
-    },
-    submit: {
-      margin: theme.spacing(3, 0, 2),
-    },
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
 });
 class Trainee extends Component {
   constructor(props) {
@@ -62,7 +61,6 @@ class Trainee extends Component {
     console.log(this.state);
     return (
       <div>
-        <NavBar />
         <Button variant="outlined" color="primary" onClick={this.onOpen} className={classes.button}>
           ADD TRAINEE
         </Button>
@@ -72,4 +70,4 @@ class Trainee extends Component {
   }
 }
 
-export default withStyles(useStyles)(Trainee); 
+export default withStyles(useStyles)(Trainee);

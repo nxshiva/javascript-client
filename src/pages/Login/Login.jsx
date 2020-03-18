@@ -20,118 +20,118 @@ const schema = yup.object().shape({
 });
 
 const useStyles = (theme) => ({
-    button: {
-        marginTop: theme.spacing(16),
-    },
-    paper: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      },
-      avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-      },
-      form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(1),
-      },
-      submit: {
-        margin: theme.spacing(3, 0, 2),
-      },
-  });
-  
-  class Login extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
+  box: {
+    marginTop: theme.spacing(16),
+  },
+  paper: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+});
+
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+      hasError: false,
+      error: {
         email: '',
         password: '',
-        hasError: false,
-        error: {
-          email: '',
-          password: '',
-        },
-        touched: {
-          email: false,
-          password: false,
-        },
-      };
-    }
-  
-    handleChange = (prop) => (event) => {
-      this.setState({ [prop]: event.target.value });
+      },
+      touched: {
+        email: false,
+        password: false,
+      },
     };
-  
-    hasErrors = () => {
-      const { hasError } = this.state;
-      schema
-        .isValid(this.state)
-        .then((valid) => {
-          if (!valid !== hasError) {
-            this.setState({ hasError: !valid });
-          }
-        });
-    }
-  
-    isTouched = (field) => {
-      const { touched } = this.state;
-      console.log('field', field);
-      this.setState({
-        touched: {
-          ...touched,
-          [field]: true,
-        },
+  }
+
+  handleChange = (prop) => (event) => {
+    this.setState({ [prop]: event.target.value });
+  };
+
+  hasErrors = () => {
+    const { hasError } = this.state;
+    schema
+      .isValid(this.state)
+      .then((valid) => {
+        if (!valid !== hasError) {
+          this.setState({ hasError: !valid });
+        }
+      });
+  }
+
+  isTouched = (field) => {
+    const { touched } = this.state;
+    console.log('field', field);
+    this.setState({
+      touched: {
+        ...touched,
+        [field]: true,
+      },
+    });
+  }
+
+  getError = (field) => {
+    const { error, touched } = this.state;
+    if (touched[field]) {
+      console.log('check3');
+      schema.validateAt(field, this.state).then(() => {
+        if (error[field] !== '') {
+          this.setState({
+            error: {
+              ...error,
+              [field]: '',
+            },
+          });
+        }
+      }).catch((err) => {
+        if (err.message !== error[field]) {
+          this.setState({
+            error: {
+              ...error,
+              [field]: err.message,
+            },
+          });
+        }
       });
     }
-  
-    getError = (field) => {
-      const { error, touched } = this.state;
-      if (touched[field]) {
-        console.log('check3');
-        schema.validateAt(field, this.state).then(() => {
-          if (error[field] !== '') {
-            this.setState({
-              error: {
-                ...error,
-                [field]: '',
-              },
-            });
-          }
-        }).catch((err) => {
-          if (err.message !== error[field]) {
-            this.setState({
-              error: {
-                ...error,
-                [field]: err.message,
-              },
-            });
-          }
-        });
-      }
-      return error[field];
-    }
-  
-    render() {
-      const { classes } = this.props;
-      const {
-        email, password, hasError, error,
-      } = this.state;
-      console.log(this.state);
-      this.hasErrors();
-      return (
-        <Container component="main" maxWidth="xs">
+    return error[field];
+  }
+
+  render() {
+    const { classes } = this.props;
+    const {
+      email, password, hasError, error,
+    } = this.state;
+    console.log(this.state);
+    this.hasErrors();
+    return (
+      <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box mx="auto" bgcolor="background.paper" p={2} className={classes.box} boxShadow={3}>
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Log in
-          </Typography>
-          <form className={classes.form} noValidate>
-          <TextField
+          <div className={classes.paper}>
+            <Avatar className={classes.avatar}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h4">
+              Log in
+            </Typography>
+            <form className={classes.form} noValidate>
+              <TextField
                 label="Email Address"
                 id="outlined-start-adornment"
                 margin="normal"
@@ -146,7 +146,7 @@ const useStyles = (theme) => ({
                 }}
                 variant="outlined"
               />
-               <TextField
+              <TextField
                 label="Password"
                 id="outlined-start-adornment"
                 margin="normal"
@@ -162,22 +162,22 @@ const useStyles = (theme) => ({
                 }}
                 variant="outlined"
               />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              disabled={hasError}
-            >
-              Sign In
-            </Button>
-          </form>
-        </div>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                disabled={hasError}
+              >
+                Sign In
+              </Button>
+            </form>
+          </div>
         </Box>
       </Container>
-      );
-    }
+    );
   }
-  
-  export default withStyles(useStyles)(Login);  
+}
+
+export default withStyles(useStyles)(Login);
