@@ -1,35 +1,43 @@
 import React from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
+import PropType from 'prop-types';
+import {
+  withStyles, createMuiTheme, ThemeProvider, Typography,
+} from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
+const styles = () => ({
+  Text: {
+    color: 'grey',
   },
-  main: {
-    marginTop: theme.spacing(8),
-    marginBottom: theme.spacing(2),
+});
+
+const theme = createMuiTheme({
+  typography: {
+    htmlFontSize: 10,
+    fontFamily: [
+      'Arial',
+    ].join(','),
   },
-}));
-
-export default function NotFound() {
-  const classes = useStyles();
-
+});
+function NotFound(props) {
+  const { classes } = props;
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <Container component="main" className={classes.main} maxWidth="sm">
-        <Typography variant="h2" component="h1" gutterBottom>
-          NOT FOUND
+    <>
+      <ThemeProvider theme={theme}>
+        <Typography>
+          <div className={classes.Text} align="center">
+            <h1>
+              NOT FOUND
+            </h1>
+            <h4>
+              Seems like the pages you are looking after does not exist
+            </h4>
+          </div>
         </Typography>
-        <Typography variant="h5" component="h2" gutterBottom>
-          Seems like the page you are looking after does not found
-        </Typography>
-      </Container>
-    </div>
+      </ThemeProvider>
+    </>
   );
 }
+NotFound.propTypes = {
+  classes: PropType.objectOf(PropType.string).isRequired,
+};
+export default withStyles(styles)(NotFound);
