@@ -1,3 +1,4 @@
 import AddDialog from './AddDialog/index';
+import TraineeTable from './Table/index';
 
-export default AddDialog;
+export { AddDialog, TraineeTable };
