@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import {
   Link,
 } from 'react-router-dom';
-import AddDialog from './Components/index';
+import { AddDialog, TraineeTable } from './Components/index';
 import trainees from './Data/trainee';
 
 
@@ -12,10 +12,13 @@ const useStyles = (theme) => ({
   button: {
     marginTop: theme.spacing(2),
   },
+  buttonPosition: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
   paper: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
@@ -69,11 +72,31 @@ class Trainee extends Component {
     const { classes } = this.props;
     console.log(this.state);
     return (
-      <div>
-        <Button variant="outlined" color="primary" onClick={this.onOpen} className={classes.button}>
-          ADD TRAINEE
-        </Button>
+      <div className={classes.paper}>
+        <div className={classes.buttonPosition}>
+          <Button variant="outlined" color="primary" onClick={this.onOpen} className={classes.button}>
+            ADD TRAINEEList
+          </Button>
+        </div>
         <AddDialog open={open} onClose={this.onClose} onSubmit={() => this.onSubmit} />
+        <TraineeTable
+          id="id"
+          data={trainees}
+          columns={
+            [
+              {
+                field: 'name',
+                label: 'Name',
+                align: 'center',
+              },
+              {
+                field: 'email',
+                label: 'Email Address',
+                align: 'center',
+              },
+            ]
+          }
+        />
         <ul>
           {
             trainees && trainees.length && trainees.map((trainee) => (
