@@ -214,7 +214,7 @@ class AddDialog extends Component {
 export default withStyles(useStyles)(AddDialog);
 
 AddDialog.propTypes = {
-  //  value: PropTypes.string.isRequired,
+  classes: PropTypes.element.isRequired,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,

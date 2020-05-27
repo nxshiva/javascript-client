@@ -4,6 +4,8 @@ import { withStyles } from '@material-ui/core/styles';
 import {
   Link,
 } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import * as moment from 'moment';
 import { AddDialog, TraineeTable } from './Components/index';
 import trainees from './Data/trainee';
 
@@ -41,8 +43,27 @@ class Trainee extends Component {
       name: '',
       email: '',
       password: '',
+      order: 'asc',
+      orderBy: '',
     };
   }
+
+  date = (date) => moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
+
+  handleSort = (event, property) => {
+    const { order, orderBy } = this.state;
+    console.log('Propertyyyyyyyyyyy', property);
+    const isAsc = orderBy === property && order === 'asc';
+    if (isAsc) {
+      this.setState({ order: 'desc', orderBy: property });
+    } else {
+      this.setState({ order: 'asc', orderBy: property });
+    }
+  };
+
+  handleSelect = (event, trainee) => {
+    console.log('Selected Trainee ', trainee);
+  };
 
   onOpen = () => {
     let { open } = this.state;
@@ -65,7 +86,7 @@ class Trainee extends Component {
   }
 
   render() {
-    const { open } = this.state;
+    const { open, order, orderBy } = this.state;
     console.log('Trainee list props', this.props);
     const { match: { url } } = this.props;
     console.log('Trainee list url', url);
@@ -93,9 +114,20 @@ class Trainee extends Component {
                 field: 'email',
                 label: 'Email Address',
                 align: 'center',
+                format: (value) => value && value.toUpperCase(),
+              },
+              {
+                field: 'createdAt',
+                label: 'Date',
+                align: 'center',
+                format: this.date,
               },
             ]
           }
+          orderBy={orderBy}
+          order={order}
+          onSort={this.handleSort}
+          onSelect={this.handleSelect}
         />
         <ul>
           {
@@ -114,3 +146,8 @@ class Trainee extends Component {
 }
 
 export default withStyles(useStyles)(Trainee);
+
+Trainee.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any).isRequired,
+  classes: PropTypes.objectOf(PropTypes.any).isRequired,
+};
