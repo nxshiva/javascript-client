@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import * as yup from 'yup';
+import PropTypes from 'prop-types';
 // import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Container from '@material-ui/core/Container';
@@ -181,3 +182,7 @@ class Login extends Component {
 }
 
 export default withStyles(useStyles)(Login);
+
+Login.propTypes = {
+  classes: PropTypes.element.isRequired,
+};
