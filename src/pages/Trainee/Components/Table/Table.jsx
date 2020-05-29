@@ -4,16 +4,25 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   container: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
+  },
+  pagination: {
+    display: 'flex',
+    flexGrow: 1,
+    justifyContent: 'right',
+    width: '100%',
+    padding: '0px',
   },
   table: {
     minWidth: 650,
@@ -48,7 +57,8 @@ const StyledTableRow = withStyles((theme) => ({
 
 export default function TraineeTable(props) {
   const {
-    id, data, columns, order, orderBy, onSort, onSelect,
+    id, data, columns, order,
+    orderBy, onSort, onSelect, actions, count, page, rowsPerPage, onChangePage, onChangeRowsPerPage,
   } = props;
   const classes = useStyles();
 
@@ -83,7 +93,8 @@ export default function TraineeTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data && data.length && data.map((trainee) => (
+          {data && data.length
+          && data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((trainee) => (
             <StyledTableRow
               onClick={(event) => onSelect(event, trainee)}
               key={trainee[id]}
@@ -95,10 +106,30 @@ export default function TraineeTable(props) {
                   </TableCell>
                 ))
               }
+              <TableCell>
+                {
+                  actions && actions.length && actions.map(({ icon, handler }) => (
+                    <div>
+                      <IconButton onClick={() => { handler(trainee); }}>
+                        {icon}
+                      </IconButton>
+                    </div>
+                  ))
+                }
+              </TableCell>
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        rowsPerPageOptions={[3, 5, 10, 25]}
+        component="div"
+        count={count}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={onChangePage}
+        onChangeRowsPerPage={onChangeRowsPerPage}
+      />
     </TableContainer>
   );
 }
@@ -108,8 +139,14 @@ TraineeTable.propTypes = {
   id: PropTypes.string.isRequired,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  actions: PropTypes.arrayOf(PropTypes.object).isRequired,
   onSort: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
+  count: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onChangeRowsPerPage: PropTypes.func.isRequired,
 };
