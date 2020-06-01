@@ -1,12 +1,16 @@
 import React, { Component, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Link,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import * as moment from 'moment';
-import { AddDialog, TraineeTable } from './Components/index';
+import {
+  AddDialog, TraineeTable, DeleteDialog, EditDialog,
+} from './Components/index';
 import trainees from './Data/trainee';
 
 
@@ -40,11 +44,16 @@ class Trainee extends Component {
     super(props);
     this.state = {
       open: false,
+      openEdit: false,
+      openDelete: false,
+      data: '',
       name: '',
       email: '',
       password: '',
       order: 'asc',
       orderBy: '',
+      page: 0,
+      rowsPerPage: 100,
     };
   }
 
@@ -64,6 +73,48 @@ class Trainee extends Component {
   handleSelect = (event, trainee) => {
     console.log('Selected Trainee ', trainee);
   };
+
+  onEditClose = () => {
+    const { openEdit } = this.state;
+    this.setState({ openEdit: false });
+    return openEdit;
+  }
+
+  onEditSubmit = (data) => {
+    const { openEdit } = this.state;
+    this.setState({ openEdit: false }, () => {
+      console.log('Edited Trainee', data);
+    });
+    return openEdit;
+  }
+
+  handleEditDialogOpen = (trainee) => {
+    let { openEdit, data } = this.state;
+    openEdit = true;
+    data = trainee;
+    this.setState({ openEdit, data });
+  }
+
+  onDeleteClose = () => {
+    let { openDelete } = this.state;
+    openDelete = false;
+    this.setState({ openDelete });
+  };
+
+  onDeleteSubmit = (data) => {
+    const { openDelete } = this.state;
+    this.setState({ openDelete: false }, () => {
+      console.log('Deleted Trainee', data);
+    });
+    return openDelete;
+  }
+
+  handleDeleteDialogOpen = (trainee) => {
+    let { openDelete, data } = this.state;
+    openDelete = true;
+    data = trainee;
+    this.setState({ openDelete, data });
+  }
 
   onOpen = () => {
     let { open } = this.state;
@@ -85,11 +136,26 @@ class Trainee extends Component {
     return open;
   }
 
+  handleChangePage = (event, newPage) => {
+    this.setState({
+      page: newPage,
+    });
+  };
+
+  handleChangeRowsPerPage = (event) => {
+    this.setState({
+      rowsPerPage: event.target.value,
+      page: 0,
+
+    });
+  };
+
   render() {
-    const { open, order, orderBy } = this.state;
-    console.log('Trainee list props', this.props);
+    const {
+      open, order, orderBy, openEdit, data, openDelete, page, rowsPerPage,
+    } = this.state;
     const { match: { url } } = this.props;
-    console.log('Trainee list url', url);
+    console.log('heloooooozzzzzzzz', data);
     const { classes } = this.props;
     console.log(this.state);
     return (
@@ -100,6 +166,18 @@ class Trainee extends Component {
           </Button>
         </div>
         <AddDialog open={open} onClose={this.onClose} onSubmit={() => this.onSubmit} />
+        <EditDialog
+          open={openEdit}
+          trainee={data}
+          onClose={() => this.onEditClose}
+          onSubmit={() => this.onEditSubmit}
+        />
+        <DeleteDialog
+          open={openDelete}
+          trainee={data}
+          onClose={this.onDeleteClose}
+          onSubmit={() => this.onDeleteSubmit}
+        />
         <TraineeTable
           id="id"
           data={trainees}
@@ -124,10 +202,27 @@ class Trainee extends Component {
               },
             ]
           }
+          actions={
+            [
+              {
+                icon: <EditIcon />,
+                handler: this.handleEditDialogOpen,
+              },
+              {
+                icon: <DeleteIcon />,
+                handler: this.handleDeleteDialogOpen,
+              },
+            ]
+          }
           orderBy={orderBy}
           order={order}
           onSort={this.handleSort}
           onSelect={this.handleSelect}
+          count={100}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onChangePage={this.handleChangePage}
+          onChangeRowsPerPage={this.handleChangeRowsPerPage}
         />
         <ul>
           {
