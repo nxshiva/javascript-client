@@ -74,39 +74,11 @@ class Trainee extends Component {
     console.log('Selected Trainee ', trainee);
   };
 
-  onEditClose = () => {
-    const { openEdit } = this.state;
-    this.setState({ openEdit: false });
-    return openEdit;
-  }
-
-  onEditSubmit = (data) => {
-    const { openEdit } = this.state;
-    this.setState({ openEdit: false }, () => {
-      console.log('Edited Trainee', data);
-    });
-    return openEdit;
-  }
-
   handleEditDialogOpen = (trainee) => {
     let { openEdit, data } = this.state;
     openEdit = true;
     data = trainee;
     this.setState({ openEdit, data });
-  }
-
-  onDeleteClose = () => {
-    let { openDelete } = this.state;
-    openDelete = false;
-    this.setState({ openDelete });
-  };
-
-  onDeleteSubmit = (data) => {
-    const { openDelete } = this.state;
-    this.setState({ openDelete: false }, () => {
-      console.log('Deleted Trainee', data);
-    });
-    return openDelete;
   }
 
   handleDeleteDialogOpen = (trainee) => {
@@ -116,25 +88,6 @@ class Trainee extends Component {
     this.setState({ openDelete, data });
   }
 
-  onOpen = () => {
-    let { open } = this.state;
-    open = true;
-    this.setState({ open });
-  };
-
-  onClose = () => {
-    let { open } = this.state;
-    open = false;
-    this.setState({ open });
-  };
-
-  onSubmit = (data) => {
-    const { open } = this.state;
-    this.setState({ open: false }, () => {
-      console.log(data);
-    });
-    return open;
-  }
 
   handleChangePage = (event, newPage) => {
     this.setState({
@@ -149,6 +102,24 @@ class Trainee extends Component {
 
     });
   };
+
+  onOpen = () => {
+    let { open } = this.state;
+    open = true;
+    this.setState({ open });
+  };
+
+  onClose = (state) => {
+    this.setState({ [state]: false });
+    return true;
+  }
+
+  onSubmit = (state, data) => {
+    this.setState({ [state]: false }, () => {
+      console.log('Data Submitted', data);
+    });
+    return true;
+  }
 
   render() {
     const {
@@ -165,18 +136,18 @@ class Trainee extends Component {
             ADD TRAINEEList
           </Button>
         </div>
-        <AddDialog open={open} onClose={this.onClose} onSubmit={() => this.onSubmit} />
+        <AddDialog open={open} onClose={() => this.onClose} onSubmit={() => this.onSubmit} />
         <EditDialog
           open={openEdit}
           trainee={data}
-          onClose={() => this.onEditClose}
-          onSubmit={() => this.onEditSubmit}
+          onClose={() => this.onClose}
+          onSubmit={() => this.onSubmit}
         />
         <DeleteDialog
           open={openDelete}
           trainee={data}
-          onClose={this.onDeleteClose}
-          onSubmit={() => this.onDeleteSubmit}
+          onClose={() => this.onClose}
+          onSubmit={() => this.onSubmit}
         />
         <TraineeTable
           id="id"

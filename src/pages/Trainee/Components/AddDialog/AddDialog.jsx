@@ -38,7 +38,6 @@ class AddDialog extends Component {
       email: '',
       password: '',
       confirmPassword: '',
-      hasError: false,
       error: {
         name: '',
         email: '',
@@ -52,38 +51,51 @@ class AddDialog extends Component {
         confirmPassword: false,
       },
     };
+    this.baseState = this.state;
+  }
+
+  resetForm = () => {
+    if (JSON.stringify(this.state) !== JSON.stringify(this.baseState)) {
+      this.setState(this.baseState);
+    }
   }
 
   handleChange = (prop) => (event) => {
-    this.setState({ [prop]: event.target.value });
+    this.setState({
+      [prop]: event.target.value,
+    }, () => {
+      this.getError(prop);
+    });
   };
 
   hasErrors = () => {
-    const { hasError } = this.state;
-    schema
-      .isValid(this.state)
-      .then((valid) => {
-        if (!valid !== hasError) {
-          this.setState({ hasError: !valid });
-        }
-      });
+    const { error, touched } = this.state;
+    let touchAll = Object.values(touched);
+    let isError = Object.values(error);
+    touchAll = touchAll.every((value) => value);
+    isError = isError.every((value) => value === '');
+    if (isError && touchAll) {
+      return false;
+    }
+
+    return true;
   }
 
   isTouched = (field) => {
     const { touched } = this.state;
-    console.log('field', field);
     this.setState({
       touched: {
         ...touched,
         [field]: true,
       },
+    }, () => {
+      this.getError(field);
     });
   }
 
   getError = (field) => {
     const { error, touched } = this.state;
     if (touched[field]) {
-      console.log('check3');
       schema.validateAt(field, this.state).then(() => {
         if (error[field] !== '') {
           this.setState({
@@ -111,7 +123,7 @@ class AddDialog extends Component {
     const { classes } = this.props;
     const { open, onClose, onSubmit } = this.props;
     const {
-      name, email, password, confirmPassword, hasError, error,
+      name, email, password, confirmPassword, error,
     } = this.state;
     console.log(this.state);
     this.hasErrors();
@@ -131,7 +143,7 @@ class AddDialog extends Component {
                 error={!!error.name}
                 fullWidth
                 onChange={this.handleChange('name')}
-                helperText={this.getError('name')}
+                helperText={error.name}
                 onBlur={() => this.isTouched('name')}
                 InputProps={{
                   startAdornment: <InputAdornment position="start"><PersonIcon /></InputAdornment>,
@@ -147,7 +159,7 @@ class AddDialog extends Component {
                 error={!!error.email}
                 fullWidth
                 onChange={this.handleChange('email')}
-                helperText={this.getError('email')}
+                helperText={error.email}
                 onBlur={() => this.isTouched('email')}
                 InputProps={{
                   startAdornment: <InputAdornment position="start"><EmailIcon /></InputAdornment>,
@@ -164,7 +176,7 @@ class AddDialog extends Component {
                 error={!!error.password}
                 fullWidth
                 onChange={this.handleChange('password')}
-                helperText={this.getError('password')}
+                helperText={error.password}
                 onBlur={() => this.isTouched('password')}
                 InputProps={{
                   startAdornment: <InputAdornment position="start"><VisibilityOff /></InputAdornment>,
@@ -181,7 +193,7 @@ class AddDialog extends Component {
                 fullWidth
                 value={confirmPassword}
                 onChange={this.handleChange('confirmPassword')}
-                helperText={this.getError('confirmPassword')}
+                helperText={error.confirmPassword}
                 onBlur={() => this.isTouched('confirmPassword')}
                 InputProps={{
                   startAdornment: <InputAdornment position="start"><VisibilityOff /></InputAdornment>,
@@ -192,16 +204,19 @@ class AddDialog extends Component {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="primary">
+          <Button
+            onClick={() => onClose()('open') && this.resetForm()}
+            color="primary"
+          >
             Cancel
           </Button>
           <Button
             variant="contained"
             color="primary"
-            onClick={() => onSubmit()({
+            onClick={() => onSubmit()('open', {
               name, email, password, confirmPassword,
-            })}
-            disabled={hasError}
+            }) && this.resetForm()}
+            disabled={this.hasErrors()}
           >
             Submit
           </Button>
