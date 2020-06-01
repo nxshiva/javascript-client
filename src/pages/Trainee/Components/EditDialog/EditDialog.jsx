@@ -14,6 +14,8 @@ import PropTypes from 'prop-types';
 import EmailIcon from '@material-ui/icons/Email';
 import Grid from '@material-ui/core/Grid';
 
+import { MyContext } from '../../../../contexts';
+
 const schema = yup.object().shape({
   name: yup.string().required('Name is required').min(3),
   email: yup.string().email().required('Email is required'),
@@ -174,21 +176,30 @@ class EditDialog extends Component {
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={() => onClose()() && this.resetForm()}
+            onClick={() => onClose()('openEdit') && this.resetForm()}
             color="primary"
           >
             Cancel
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => onSubmit()({
-              name, email,
-            }) && this.resetForm()}
-            disabled={this.hasErrors()}
-          >
-            Submit
-          </Button>
+          <MyContext.Consumer>
+            {(value) => (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={this.hasErrors()}
+                  onClick={() => {
+                    onSubmit()('openEdit', {
+                      name, email,
+                    }); this.resetForm(); value.openSnackBar('This is a success message ! ', 'success');
+                  }}
+                >
+                  Submit
+                </Button>
+              </>
+            )}
+          </MyContext.Consumer>
+
         </DialogActions>
       </Dialog>
     );
