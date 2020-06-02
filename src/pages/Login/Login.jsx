@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+// import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,7 +14,11 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import EmailIcon from '@material-ui/icons/Email';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { Box } from '@material-ui/core';
+import callApi from '../../lib/utils/api';
+
+import { MyContext } from '../../contexts/index';
 
 const schema = yup.object().shape({
   email: yup.string().email().required('Email is required'),
@@ -48,6 +53,8 @@ class Login extends Component {
     this.state = {
       email: '',
       password: '',
+      loading: false,
+      fetchData: '',
       hasError: false,
       error: {
         email: '',
@@ -60,36 +67,66 @@ class Login extends Component {
     };
   }
 
+  fetchData = (value) => {
+    const { email, password } = this.state;
+    console.log('Email', email);
+    console.log('Password', password);
+
+    this.setState({ loading: true }, async () => {
+      console.log('Inside Loader');
+      const response = await callApi('post', 'user/login', {
+        email,
+        password,
+      });
+      console.log('api data', response);
+      this.setState({ loading: false }, () => {
+        if (response.status === 'ok') {
+          localStorage.setItem('Token', response.data);
+          const { history } = this.props;
+          history.push('/trainee');
+        } else {
+          value.openSnackBar(response.message, response.status);
+        }
+      });
+    });
+  }
+
   handleChange = (prop) => (event) => {
-    this.setState({ [prop]: event.target.value });
+    this.setState({
+      [prop]: event.target.value,
+    }, () => {
+      this.getError(prop);
+    });
   };
 
   hasErrors = () => {
-    const { hasError } = this.state;
-    schema
-      .isValid(this.state)
-      .then((valid) => {
-        if (!valid !== hasError) {
-          this.setState({ hasError: !valid });
-        }
-      });
+    const { error, touched } = this.state;
+    let touchAll = Object.values(touched);
+    let isError = Object.values(error);
+    touchAll = touchAll.every((value) => value);
+    isError = isError.every((value) => value === '');
+    if (isError && touchAll) {
+      return false;
+    }
+
+    return true;
   }
 
   isTouched = (field) => {
     const { touched } = this.state;
-    console.log('field', field);
     this.setState({
       touched: {
         ...touched,
         [field]: true,
       },
+    }, () => {
+      this.getError(field);
     });
   }
 
   getError = (field) => {
     const { error, touched } = this.state;
     if (touched[field]) {
-      console.log('check3');
       schema.validateAt(field, this.state).then(() => {
         if (error[field] !== '') {
           this.setState({
@@ -116,10 +153,9 @@ class Login extends Component {
   render() {
     const { classes } = this.props;
     const {
-      email, password, hasError, error,
+      email, password, error, loading,
     } = this.state;
-    console.log(this.state);
-    this.hasErrors();
+    // console.log(this.state);
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -140,7 +176,7 @@ class Login extends Component {
                 error={!!error.email}
                 fullWidth
                 onChange={this.handleChange('email')}
-                helperText={this.getError('email')}
+                helperText={error.email}
                 onBlur={() => this.isTouched('email')}
                 InputProps={{
                   startAdornment: <InputAdornment position="start"><EmailIcon /></InputAdornment>,
@@ -156,23 +192,31 @@ class Login extends Component {
                 error={!!error.password}
                 fullWidth
                 onChange={this.handleChange('password')}
-                helperText={this.getError('password')}
+                helperText={error.password}
                 onBlur={() => this.isTouched('password')}
                 InputProps={{
                   startAdornment: <InputAdornment position="start"><VisibilityOff /></InputAdornment>,
                 }}
                 variant="outlined"
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                disabled={hasError}
-              >
-                Sign In
-              </Button>
+              <MyContext.Consumer>
+                {(value) => (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    disabled={loading || this.hasErrors()}
+                    onClick={() => { this.fetchData(value); }}
+                  >
+                    {loading && (
+                      <CircularProgress color="secondary" />
+                    )}
+                    {loading && <span> Signing in...</span>}
+                    {!loading && <span>Sign in</span>}
+                  </Button>
+                )}
+              </MyContext.Consumer>
             </form>
           </div>
         </Box>
@@ -185,4 +229,5 @@ export default withStyles(useStyles)(Login);
 
 Login.propTypes = {
   classes: PropTypes.element.isRequired,
+  history: PropTypes.objectOf(PropTypes.any).isRequired,
 };

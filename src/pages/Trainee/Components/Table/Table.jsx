@@ -10,7 +10,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -90,35 +90,36 @@ export default function TraineeTable(props) {
                 </TableCell>
               ))
             }
+            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>
           {data && data.length
-          && data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((trainee) => (
-            <StyledTableRow
-              onClick={(event) => onSelect(event, trainee)}
-              key={trainee[id]}
-            >
-              {
-                columns && columns.length && columns.map(({ field, align, format }) => (
-                  <TableCell align={align}>
-                    {format ? format(trainee[field]) : trainee[field]}
-                  </TableCell>
-                ))
-              }
-              <TableCell>
+            && data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((trainee) => (
+              <StyledTableRow
+                onClick={(event) => onSelect(event, trainee)}
+                key={trainee[id]}
+              >
                 {
-                  actions && actions.length && actions.map(({ icon, handler }) => (
-                    <div>
-                      <IconButton onClick={() => { handler(trainee); }}>
-                        {icon}
-                      </IconButton>
-                    </div>
+                  columns && columns.length && columns.map(({ field, align, format }) => (
+                    <TableCell align={align}>
+                      {format ? format(trainee[field]) : trainee[field]}
+                    </TableCell>
                   ))
                 }
-              </TableCell>
-            </StyledTableRow>
-          ))}
+                <TableCell>
+                  {
+                    actions && actions.length && actions.map(({ icon, handler }) => (
+                      <div>
+                        <Button onClick={() => { handler(trainee); }}>
+                          {icon}
+                        </Button>
+                      </div>
+                    ))
+                  }
+                </TableCell>
+              </StyledTableRow>
+            ))}
         </TableBody>
       </Table>
       <TablePagination

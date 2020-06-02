@@ -11,7 +11,6 @@ import { SnackBarProvider } from './contexts';
 // import { Typography } from '@material-ui/core';
 // import { theme } from './theme';
 // import { Trainee } from './pages/index';
-// import Login from './pages/Login/index';
 
 function App() {
   return (
@@ -19,7 +18,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/">
-            <Redirect to="/trainee" />
+            <Redirect to="/login" />
           </Route>
           <AuthRoute exact path="/login" component={Login} />
           <PrivateRoute path="/trainee" component={TraineeRoutes} />

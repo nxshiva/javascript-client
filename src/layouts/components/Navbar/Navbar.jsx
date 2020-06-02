@@ -37,7 +37,7 @@ export default function NavBar() {
             <Button component={Link} to="/input-demo" color="inherit">Input Demo</Button>
             <Button component={Link} to="/children-demo" color="inherit">Children Demo</Button>
           </div>
-          <Button component={Link} to="/login" color="inherit">Login</Button>
+          <Button component={Link} to="/login" color="inherit" onClick={() => { localStorage.removeItem('Token'); }}>Log Out</Button>
         </Toolbar>
       </AppBar>
     </div>
