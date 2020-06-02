@@ -126,7 +126,6 @@ class AddDialog extends Component {
       name, email, password, confirmPassword, error,
     } = this.state;
     console.log(this.state);
-    this.hasErrors();
     return (
       <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Add TRAINEE</DialogTitle>

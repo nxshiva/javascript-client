@@ -1,18 +1,31 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { AuthLayout } from '../layouts/index';
+// import PrivateRoute from './PrivateRoute';
+// import TraineeRoutes from '../pages/Trainee/index';
 
-const AuthRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={(matchProps) => (
-      <AuthLayout>
-        <Component {...matchProps} />
-      </AuthLayout>
-    )}
-  />
-);
+const AuthRoute = ({ component: Component, ...rest }) => {
+  const token = localStorage.getItem('Token');
+  console.log('getToken', token);
+  return (
+    <>
+      {token ? (
+        <Redirect to="/trainee" />
+      )
+        : (
+          <Route
+            {...rest}
+            render={(matchProps) => (
+              <AuthLayout>
+                <Component {...matchProps} />
+              </AuthLayout>
+            )}
+          />
+        )}
+    </>
+  );
+};
 
 export default AuthRoute;
 
