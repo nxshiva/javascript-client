@@ -69,16 +69,12 @@ class Login extends Component {
 
   fetchData = (value) => {
     const { email, password } = this.state;
-    console.log('Email', email);
-    console.log('Password', password);
 
     this.setState({ loading: true }, async () => {
-      console.log('Inside Loader');
       const response = await callApi('post', 'user/login', {
         email,
         password,
       });
-      console.log('api data', response);
       this.setState({ loading: false }, () => {
         if (response.status === 'ok') {
           localStorage.setItem('Token', response.data);

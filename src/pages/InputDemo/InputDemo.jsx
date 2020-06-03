@@ -83,7 +83,6 @@ class InputDemo extends Component {
 
   isTouched = (field) => {
     const { touched } = this.state;
-    console.log('field', field);
     this.setState({
       touched: {
         ...touched,
@@ -103,7 +102,6 @@ class InputDemo extends Component {
   };
 
   render() {
-    console.log(this.state);
     const { sport, name } = this.state;
     return (
       <form>

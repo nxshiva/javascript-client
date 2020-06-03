@@ -11,6 +11,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import { withLoaderAndMessage } from '../../../../components/index';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -55,7 +56,7 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-export default function TraineeTable(props) {
+function TraineeTable(props) {
   const {
     id, data, columns, order,
     orderBy, onSort, onSelect, actions, count, page, rowsPerPage, onChangePage, onChangeRowsPerPage,
@@ -95,7 +96,7 @@ export default function TraineeTable(props) {
         </TableHead>
         <TableBody>
           {data && data.length
-            && data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((trainee) => (
+            && data.map((trainee) => (
               <StyledTableRow
                 onClick={(event) => onSelect(event, trainee)}
                 key={trainee[id]}
@@ -123,7 +124,7 @@ export default function TraineeTable(props) {
         </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[3, 5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 15, 20, 25]}
         component="div"
         count={count}
         rowsPerPage={rowsPerPage}
@@ -134,6 +135,10 @@ export default function TraineeTable(props) {
     </TableContainer>
   );
 }
+
+const enhancedTable = withLoaderAndMessage(TraineeTable);
+
+export default enhancedTable;
 
 TraineeTable.propTypes = {
 

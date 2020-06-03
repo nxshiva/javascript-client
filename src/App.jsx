@@ -7,10 +7,6 @@ import {
   TextFieldDemo, InputDemo, CalculatorDemo, TraineeRoutes, NotFound, Login,
 } from './pages/index';
 import { SnackBarProvider } from './contexts';
-// import { ThemeProvider } from '@material-ui/core/styles';
-// import { Typography } from '@material-ui/core';
-// import { theme } from './theme';
-// import { Trainee } from './pages/index';
 
 function App() {
   return (

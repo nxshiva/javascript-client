@@ -5,7 +5,6 @@ import { PrivateLayout } from '../layouts/index';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const token = localStorage.getItem('Token');
-  console.log('getToken', token);
   return (
     <>
       {token ? (
