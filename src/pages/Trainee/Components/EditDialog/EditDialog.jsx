@@ -53,7 +53,6 @@ class EditDialog extends Component {
 
   handleChange = (prop) => (event) => {
     const { touched } = this.state;
-    console.log('Handle change');
     this.setState({
       [prop]: event.target.value,
       touched: {
@@ -79,15 +78,10 @@ class EditDialog extends Component {
   }
 
   isTouched = (states) => {
-    console.log('isTouched');
-    console.log('isTouchedStates', states);
     const { touched } = this.state;
     const { trainee } = this.props;
     states.forEach((state) => {
-      console.log('touched true/false', touched[state]);
-      console.log('touched trainee data', trainee[state]);
       if (touched[state] === false) {
-        console.log('Inside If', state);
         this.setState({
           [state]: trainee[state],
           touched: {

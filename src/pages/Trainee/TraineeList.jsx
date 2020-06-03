@@ -8,10 +8,13 @@ import {
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import * as moment from 'moment';
+// import CircularProgress from '@material-ui/core/CircularProgress';
 import {
   AddDialog, TraineeTable, DeleteDialog, EditDialog,
 } from './Components/index';
 import trainees from './Data/trainee';
+import callApi from '../../lib/utils/api';
+import { MyContext } from '../../contexts';
 
 
 const useStyles = (theme) => ({
@@ -47,21 +50,38 @@ class Trainee extends Component {
       openEdit: false,
       openDelete: false,
       data: '',
-      name: '',
-      email: '',
-      password: '',
       order: 'asc',
       orderBy: '',
       page: 0,
-      rowsPerPage: 100,
+      rowsPerPage: 20,
+      count: '',
+      tableData: '',
+      loading: false,
     };
+  }
+
+  componentDidMount() {
+    const { rowsPerPage, page } = this.state;
+    this.setState({ loading: true }, async () => {
+      const response = await callApi('get', 'trainee', {
+        limit: rowsPerPage,
+        skip: page,
+      });
+      this.setState({ loading: false }, () => {
+        if (response.status === 'ok') {
+          this.setState({ count: response.data.count, tableData: response.data.records });
+        } else {
+          const value = this.context;
+          value.openSnackBar(response.message, response.status);
+        }
+      });
+    });
   }
 
   date = (date) => moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
 
   handleSort = (event, property) => {
     const { order, orderBy } = this.state;
-    console.log('Propertyyyyyyyyyyy', property);
     const isAsc = orderBy === property && order === 'asc';
     if (isAsc) {
       this.setState({ order: 'desc', orderBy: property });
@@ -90,10 +110,22 @@ class Trainee extends Component {
 
 
   handleChangePage = (event, newPage) => {
-    this.setState({
-      page: newPage,
+    const { rowsPerPage } = this.state;
+    this.setState({ page: newPage, loading: true }, async () => {
+      const response = await callApi('get', 'trainee', {
+        limit: rowsPerPage,
+        skip: newPage * rowsPerPage,
+      });
+      this.setState({ loading: false }, () => {
+        if (response.status === 'ok') {
+          this.setState({ tableData: response.data.records });
+        } else {
+          const value = this.context;
+          value.openSnackBar(response.message, response.status);
+        }
+      });
     });
-  };
+  }
 
   handleChangeRowsPerPage = (event) => {
     this.setState({
@@ -123,12 +155,11 @@ class Trainee extends Component {
 
   render() {
     const {
-      open, order, orderBy, openEdit, data, openDelete, page, rowsPerPage,
+      open, order, orderBy, openEdit, data, openDelete, page,
+      rowsPerPage, loading, count, tableData,
     } = this.state;
     const { match: { url } } = this.props;
-    console.log('heloooooozzzzzzzz', data);
     const { classes } = this.props;
-    console.log(this.state);
     return (
       <div className={classes.paper}>
         <div className={classes.buttonPosition}>
@@ -151,7 +182,7 @@ class Trainee extends Component {
         />
         <TraineeTable
           id="id"
-          data={trainees}
+          data={tableData}
           columns={
             [
               {
@@ -189,11 +220,13 @@ class Trainee extends Component {
           order={order}
           onSort={this.handleSort}
           onSelect={this.handleSelect}
-          count={100}
+          count={count}
           page={page}
           rowsPerPage={rowsPerPage}
           onChangePage={this.handleChangePage}
           onChangeRowsPerPage={this.handleChangeRowsPerPage}
+          loading={loading}
+          dataLength={tableData.length}
         />
         <ul>
           {
@@ -212,6 +245,7 @@ class Trainee extends Component {
 }
 
 export default withStyles(useStyles)(Trainee);
+Trainee.contextType = MyContext;
 
 Trainee.propTypes = {
   match: PropTypes.objectOf(PropTypes.any).isRequired,
