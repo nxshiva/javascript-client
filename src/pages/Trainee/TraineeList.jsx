@@ -49,33 +49,19 @@ class Trainee extends Component {
       open: false,
       openEdit: false,
       openDelete: false,
-      data: '',
+      data: {},
       order: 'asc',
       orderBy: '',
       page: 0,
       rowsPerPage: 20,
-      count: '',
-      tableData: '',
+      count: 0,
+      tableData: [],
       loading: false,
     };
   }
 
-  componentDidMount() {
-    const { rowsPerPage, page } = this.state;
-    this.setState({ loading: true }, async () => {
-      const response = await callApi('get', 'trainee', {
-        limit: rowsPerPage,
-        skip: page,
-      });
-      this.setState({ loading: false }, () => {
-        if (response.status === 'ok') {
-          this.setState({ count: response.data.count, tableData: response.data.records });
-        } else {
-          const value = this.context;
-          value.openSnackBar(response.message, response.status);
-        }
-      });
-    });
+  componentDidMount(event) {
+    this.handleChangePage(event, 0);
   }
 
   date = (date) => moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
@@ -108,17 +94,24 @@ class Trainee extends Component {
     this.setState({ openDelete, data });
   }
 
+  test = async (response, page) => {
+    if (response.length === 0 && page > 0) {
+      await this.handleChangePage('', (page - 1));
+    }
+  }
 
   handleChangePage = (event, newPage) => {
     const { rowsPerPage } = this.state;
     this.setState({ page: newPage, loading: true }, async () => {
+      const { page } = this.state;
       const response = await callApi('get', 'trainee', {
         limit: rowsPerPage,
-        skip: newPage * rowsPerPage,
+        skip: page * rowsPerPage,
       });
+
       this.setState({ loading: false }, () => {
         if (response.status === 'ok') {
-          this.setState({ tableData: response.data.records });
+          this.setState({ count: response.data.count, tableData: response.data.records });
         } else {
           const value = this.context;
           value.openSnackBar(response.message, response.status);
@@ -132,6 +125,9 @@ class Trainee extends Component {
       rowsPerPage: event.target.value,
       page: 0,
 
+    }, () => {
+      const { page } = this.state;
+      this.handleChangePage(event, page);
     });
   };
 
@@ -147,10 +143,25 @@ class Trainee extends Component {
   }
 
   onSubmit = (state, data) => {
-    this.setState({ [state]: false }, () => {
+    const { page } = this.state;
+    this.setState({ [state]: false, data: {} }, (event) => {
+      this.handleChangePage(event, page);
       console.log('Data Submitted', data);
     });
     return true;
+  }
+
+  onSubmitDelete = (data) => {
+    const { rowsPerPage, count, page } = this.state;
+    const result = count - (page * rowsPerPage);
+    this.setState({ openDelete: false, data: {} }, (event) => {
+      console.log('Data Submitted', data);
+      if (result === 1) {
+        this.handleChangePage(event, (page - 1));
+      } else {
+        this.handleChangePage(event, (page));
+      }
+    });
   }
 
   render() {
@@ -178,7 +189,7 @@ class Trainee extends Component {
           open={openDelete}
           trainee={data}
           onClose={() => this.onClose}
-          onSubmit={() => this.onSubmit}
+          onSubmit={() => this.onSubmitDelete}
         />
         <TraineeTable
           id="id"

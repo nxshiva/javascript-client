@@ -1,9 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {
-  createMuiTheme, ThemeProvider, Typography,
-} from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   buttonPosition: {
@@ -14,15 +11,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const theme = createMuiTheme({
-  typography: {
-    htmlFontSize: 10,
-    fontFamily: [
-      'Arial',
-    ].join(','),
-  },
-});
-
 const withLoaderAndMessage = (WrappedComponent) => (props) => {
   const classes = useStyles();
   const { loading, ...rest } = props;
@@ -31,22 +19,7 @@ const withLoaderAndMessage = (WrappedComponent) => (props) => {
   }
 
   return (
-    <>
-      {props.dataLength ? (<WrappedComponent {...rest} />) : (
-        <>
-          <ThemeProvider theme={theme}>
-            <Typography>
-              <div className={classes.Text} align="center">
-                <h4>
-                  OOPS!, No More Trainees
-                </h4>
-              </div>
-            </Typography>
-          </ThemeProvider>
-        </>
-      )}
-    </>
-
+    <WrappedComponent {...rest} />
   );
 };
 

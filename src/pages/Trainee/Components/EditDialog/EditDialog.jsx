@@ -10,9 +10,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import PersonIcon from '@material-ui/icons/Person';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
 import EmailIcon from '@material-ui/icons/Email';
 import Grid from '@material-ui/core/Grid';
+import callApi from '../../../../lib/utils/api';
 
 import { MyContext } from '../../../../contexts';
 
@@ -33,6 +35,7 @@ class EditDialog extends Component {
     this.state = {
       name: '',
       email: '',
+      loading: false,
       error: {
         name: '',
         email: '',
@@ -43,6 +46,32 @@ class EditDialog extends Component {
       },
     };
     this.baseState = this.state;
+  }
+
+  fetchData = (value) => {
+    const {
+      name, email,
+    } = this.state;
+    const { onSubmit, trainee } = this.props;
+    this.setState({ loading: true }, async () => {
+      const response = await callApi('put', 'trainee', {
+        name,
+        email,
+        // password: 'Training@123',
+        id: trainee.originalId,
+      });
+      this.setState({ loading: false }, () => {
+        if (response.status === 'ok') {
+          onSubmit()('openEdit', {
+            name, email,
+          });
+          this.resetForm();
+          value.openSnackBar(response.message, 'success');
+        } else {
+          value.openSnackBar(response.message, response.status);
+        }
+      });
+    });
   }
 
   resetForm = () => {
@@ -121,10 +150,10 @@ class EditDialog extends Component {
   render() {
     const { classes } = this.props;
     const {
-      open, onClose, onSubmit, trainee,
+      open, onClose, trainee,
     } = this.props;
     const {
-      name, email, error,
+      error, loading,
     } = this.state;
     return (
       <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
@@ -177,20 +206,20 @@ class EditDialog extends Component {
           </Button>
           <MyContext.Consumer>
             {(value) => (
-              <>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={this.hasErrors()}
-                  onClick={() => {
-                    onSubmit()('openEdit', {
-                      name, email,
-                    }); this.resetForm(); value.openSnackBar('This is a success message ! ', 'success');
-                  }}
-                >
-                  Submit
-                </Button>
-              </>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={loading || this.hasErrors()}
+                onClick={() => {
+                  this.fetchData(value);
+                }}
+              >
+                {loading && (
+                  <CircularProgress color="secondary" />
+                )}
+                {loading && <span> Adding....</span>}
+                {!loading && <span>Submit</span>}
+              </Button>
             )}
           </MyContext.Consumer>
 
@@ -203,7 +232,7 @@ class EditDialog extends Component {
 export default withStyles(useStyles)(EditDialog);
 
 EditDialog.propTypes = {
-  classes: PropTypes.element.isRequired,
+  classes: PropTypes.objectOf(PropTypes.string).isRequired,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,

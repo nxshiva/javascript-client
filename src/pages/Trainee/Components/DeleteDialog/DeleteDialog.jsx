@@ -5,8 +5,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
-import * as moment from 'moment';
+// import * as moment from 'moment';
+import callApi from '../../../../lib/utils/api';
+
 
 import { MyContext } from '../../../../contexts';
 
@@ -14,34 +17,51 @@ class DeleteDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: '',
+      loading: false,
     };
   }
 
-  handleSnackBarMessage = (data, openSnackBar) => {
-    const date = '2019-02-14T18:15:11.778Z';
-    const isAfter = (moment(data.createdAt).isAfter(date));
-    if (isAfter) {
-      this.setState({
-        message: 'This is a success Message! ',
-      }, () => {
-        const { message } = this.state;
-        openSnackBar(message, 'success');
+  fetchData = (value) => {
+    const { onSubmit, trainee } = this.props;
+    const url = `trainee/${trainee.originalId}`;
+    this.setState({ loading: true }, async () => {
+      const response = await callApi('delete', url, {});
+      this.setState({ loading: false }, () => {
+        if (response.status === 'ok') {
+          onSubmit()(trainee);
+          value.openSnackBar(response.message, 'success');
+        } else {
+          value.openSnackBar(response.message, response.status);
+        }
       });
-    } else {
-      this.setState({
-        message: 'This is an error',
-      }, () => {
-        const { message } = this.state;
-        openSnackBar(message, 'error');
-      });
-    }
+    });
   }
+
+  // handleSnackBarMessage = (data, openSnackBar) => {
+  //   const date = '2019-02-14T18:15:11.778Z';
+  //   const isAfter = (moment(data.createdAt).isAfter(date));
+  //   if (isAfter) {
+  //     this.setState({
+  //       message: 'This is a success Message! ',
+  //     }, () => {
+  //       const { message } = this.state;
+  //       openSnackBar(message, 'success');
+  //     });
+  //   } else {
+  //     this.setState({
+  //       message: 'This is an error',
+  //     }, () => {
+  //       const { message } = this.state;
+  //       openSnackBar(message, 'error');
+  //     });
+  //   }
+  // }
 
   render = () => {
     const {
-      onClose, open, onSubmit, trainee,
+      onClose, open,
     } = this.props;
+    const { loading } = this.state;
     return (
       <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Remove Trainee</DialogTitle>
@@ -51,20 +71,29 @@ class DeleteDialog extends React.Component {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="primary">
+          <Button
+            onClick={() => onClose()('openDelete')}
+            color="primary"
+          >
             Cancel
           </Button>
           <MyContext.Consumer>
-            {(value) => {
-              const { openSnackBar } = value;
-              return (
-                <>
-                  <Button color="primary" variant="contained" onClick={() => { onSubmit()('openDelete', trainee); this.handleSnackBarMessage(trainee, openSnackBar); }}>
-                    Delete
-                  </Button>
-                </>
-              );
-            }}
+            {(value) => (
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                onClick={() => {
+                  this.fetchData(value);
+                }}
+              >
+                {loading && (
+                  <CircularProgress color="secondary" />
+                )}
+                {loading && <span> Deleting....</span>}
+                {!loading && <span>Delete</span>}
+              </Button>
+            )}
           </MyContext.Consumer>
 
         </DialogActions>

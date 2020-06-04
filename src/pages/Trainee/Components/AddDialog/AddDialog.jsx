@@ -152,7 +152,7 @@ class AddDialog extends Component {
 
   render() {
     const { classes } = this.props;
-    const { open, onClose, onSubmit } = this.props;
+    const { open, onClose } = this.props;
     const {
       name, email, password, confirmPassword, error, loading,
     } = this.state;
@@ -245,7 +245,6 @@ class AddDialog extends Component {
               <Button
                 variant="contained"
                 color="primary"
-                className={classes.submit}
                 disabled={loading || this.hasErrors()}
                 onClick={() => {
                   this.fetchData(value);
@@ -268,7 +267,7 @@ class AddDialog extends Component {
 export default withStyles(useStyles)(AddDialog);
 
 AddDialog.propTypes = {
-  classes: PropTypes.element.isRequired,
+  classes: PropTypes.objectOf(PropTypes.string).isRequired,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,

@@ -59,7 +59,8 @@ const StyledTableRow = withStyles((theme) => ({
 function TraineeTable(props) {
   const {
     id, data, columns, order,
-    orderBy, onSort, onSelect, actions, count, page, rowsPerPage, onChangePage, onChangeRowsPerPage,
+    orderBy, onSort, onSelect, actions,
+    count, page, rowsPerPage, onChangePage, onChangeRowsPerPage, dataLength,
   } = props;
   const classes = useStyles();
 
@@ -95,32 +96,42 @@ function TraineeTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data && data.length
-            && data.map((trainee) => (
-              <StyledTableRow
-                onClick={(event) => onSelect(event, trainee)}
-                key={trainee[id]}
-              >
+          {dataLength ? data.map((trainee) => (
+            <StyledTableRow
+              onClick={(event) => onSelect(event, trainee)}
+              key={trainee[id]}
+            >
+              {
+                columns && columns.length && columns.map(({ field, align, format }) => (
+                  <TableCell align={align}>
+                    {format ? format(trainee[field]) : trainee[field]}
+                  </TableCell>
+                ))
+              }
+              <TableCell>
                 {
-                  columns && columns.length && columns.map(({ field, align, format }) => (
-                    <TableCell align={align}>
-                      {format ? format(trainee[field]) : trainee[field]}
-                    </TableCell>
+                  actions && actions.length && actions.map(({ icon, handler }) => (
+                    <div>
+                      <Button onClick={() => { handler(trainee); }}>
+                        {icon}
+                      </Button>
+                    </div>
                   ))
                 }
-                <TableCell>
-                  {
-                    actions && actions.length && actions.map(({ icon, handler }) => (
-                      <div>
-                        <Button onClick={() => { handler(trainee); }}>
-                          {icon}
-                        </Button>
-                      </div>
-                    ))
-                  }
-                </TableCell>
-              </StyledTableRow>
-            ))}
+              </TableCell>
+            </StyledTableRow>
+          )) : (
+            <TableRow>
+              <TableCell align="center" colSpan={4}>
+                <div align="center">
+                  <h1>
+                    OOPS!, No More Trainees
+                  </h1>
+                </div>
+              </TableCell>
+
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       <TablePagination
@@ -155,4 +166,5 @@ TraineeTable.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
   onChangePage: PropTypes.func.isRequired,
   onChangeRowsPerPage: PropTypes.func.isRequired,
+  dataLength: PropTypes.number.isRequired,
 };
