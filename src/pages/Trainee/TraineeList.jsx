@@ -94,12 +94,6 @@ class Trainee extends Component {
     this.setState({ openDelete, data });
   }
 
-  test = async (response, page) => {
-    if (response.length === 0 && page > 0) {
-      await this.handleChangePage('', (page - 1));
-    }
-  }
-
   handleChangePage = (event, newPage) => {
     const { rowsPerPage } = this.state;
     this.setState({ page: newPage, loading: true }, async () => {
@@ -156,7 +150,7 @@ class Trainee extends Component {
     const result = count - (page * rowsPerPage);
     this.setState({ openDelete: false, data: {} }, (event) => {
       console.log('Data Submitted', data);
-      if (result === 1) {
+      if (result === 1 && page > 0) {
         this.handleChangePage(event, (page - 1));
       } else {
         this.handleChangePage(event, (page));

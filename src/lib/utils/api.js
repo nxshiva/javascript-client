@@ -2,6 +2,7 @@ import axios from 'axios';
 
 async function callApi(method, url, data) {
   const completeUrl = process.env.REACT_APP_BASE_URL + url;
+  console.log('Complete URL', completeUrl);
   try {
     const response = await axios({
       method,

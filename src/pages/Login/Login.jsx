@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-// import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
-// import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Container from '@material-ui/core/Container';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -16,7 +14,6 @@ import EmailIcon from '@material-ui/icons/Email';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Box } from '@material-ui/core';
-import callApi from '../../lib/utils/api';
 
 import { MyContext } from '../../contexts/index';
 
@@ -69,20 +66,15 @@ class Login extends Component {
 
   fetchData = (value) => {
     const { email, password } = this.state;
+    const { LoginUser, history } = this.props;
 
     this.setState({ loading: true }, async () => {
-      const response = await callApi('post', 'user/login', {
-        email,
-        password,
-      });
+      const response = await LoginUser({ variables: { email, password } });
       this.setState({ loading: false }, () => {
-        if (response.status === 'ok') {
-          localStorage.setItem('Token', response.data);
-          const { history } = this.props;
-          history.push('/trainee');
-        } else {
-          value.openSnackBar(response.message, response.status);
-        }
+        const { loginUser } = response.data;
+        console.log('Token', loginUser);
+        localStorage.setItem('Token', loginUser);
+        history.push('/trainee');
       });
     });
   }
@@ -226,4 +218,5 @@ export default withStyles(useStyles)(Login);
 Login.propTypes = {
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
   history: PropTypes.objectOf(PropTypes.any).isRequired,
+  LoginUser: PropTypes.func.isRequired,
 };
