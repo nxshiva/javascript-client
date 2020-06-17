@@ -8,7 +8,6 @@ import Login from './Login';
 
 export default () => {
   const history = useHistory();
-  console.log('history', history);
   return (
     <Mutation mutation={LOGIN_USER}>
       {(loginUser) => (

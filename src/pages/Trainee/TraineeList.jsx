@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { compose } from 'recompose';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -8,13 +9,13 @@ import {
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import * as moment from 'moment';
-// import CircularProgress from '@material-ui/core/CircularProgress';
+import { graphql } from '@apollo/react-hoc';
 import {
   AddDialog, TraineeTable, DeleteDialog, EditDialog,
 } from './Components/index';
 import trainees from './Data/trainee';
-import callApi from '../../lib/utils/api';
 import { MyContext } from '../../contexts';
+import { GET_TRAINEE } from './query';
 
 
 const useStyles = (theme) => ({
@@ -54,15 +55,12 @@ class Trainee extends Component {
       orderBy: '',
       page: 0,
       rowsPerPage: 20,
-      count: 0,
-      tableData: [],
-      loading: false,
     };
   }
 
-  componentDidMount(event) {
-    this.handleChangePage(event, 0);
-  }
+  // componentDidMount(event) {
+  //   this.handleChangePage(event, 0);
+  // }
 
   date = (date) => moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
 
@@ -94,23 +92,10 @@ class Trainee extends Component {
     this.setState({ openDelete, data });
   }
 
-  handleChangePage = (event, newPage) => {
+  handleChangePage = (refetch) => (event, newPage) => {
     const { rowsPerPage } = this.state;
-    this.setState({ page: newPage, loading: true }, async () => {
-      const { page } = this.state;
-      const response = await callApi('get', 'trainee', {
-        limit: rowsPerPage,
-        skip: page * rowsPerPage,
-      });
-
-      this.setState({ loading: false }, () => {
-        if (response.status === 'ok') {
-          this.setState({ count: response.data.count, tableData: response.data.records });
-        } else {
-          const value = this.context;
-          value.openSnackBar(response.message, response.status);
-        }
-      });
+    this.setState({ page: newPage }, () => {
+      refetch({ limit: rowsPerPage, skip: rowsPerPage * newPage });
     });
   }
 
@@ -161,10 +146,17 @@ class Trainee extends Component {
   render() {
     const {
       open, order, orderBy, openEdit, data, openDelete, page,
-      rowsPerPage, loading, count, tableData,
+      rowsPerPage,
     } = this.state;
     const { match: { url } } = this.props;
-    const { classes } = this.props;
+    const {
+      classes,
+      data: {
+        getAllTrainee: { count = 0, records = [] } = {},
+        refetch,
+        loading,
+      },
+    } = this.props;
     return (
       <div className={classes.paper}>
         <div className={classes.buttonPosition}>
@@ -187,7 +179,7 @@ class Trainee extends Component {
         />
         <TraineeTable
           id="id"
-          data={tableData}
+          data={records}
           columns={
             [
               {
@@ -228,10 +220,10 @@ class Trainee extends Component {
           count={count}
           page={page}
           rowsPerPage={rowsPerPage}
-          onChangePage={this.handleChangePage}
+          onChangePage={this.handleChangePage(refetch)}
           onChangeRowsPerPage={this.handleChangeRowsPerPage}
           loading={loading}
-          dataLength={tableData.length}
+          dataLength={records.length}
         />
         <ul>
           {
@@ -249,10 +241,16 @@ class Trainee extends Component {
   }
 }
 
-export default withStyles(useStyles)(Trainee);
+export default compose(
+  withStyles(useStyles),
+  graphql(GET_TRAINEE, {
+    options: { variables: { limit: 5, skip: 0 } },
+  }),
+)(Trainee);
 Trainee.contextType = MyContext;
 
 Trainee.propTypes = {
   match: PropTypes.objectOf(PropTypes.any).isRequired,
   classes: PropTypes.objectOf(PropTypes.any).isRequired,
+  data: PropTypes.objectOf(PropTypes.any).isRequired,
 };

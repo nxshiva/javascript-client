@@ -69,13 +69,18 @@ class Login extends Component {
     const { LoginUser, history } = this.props;
 
     this.setState({ loading: true }, async () => {
-      const response = await LoginUser({ variables: { email, password } });
-      this.setState({ loading: false }, () => {
-        const { loginUser } = response.data;
-        console.log('Token', loginUser);
-        localStorage.setItem('Token', loginUser);
-        history.push('/trainee');
-      });
+      try {
+        const response = await LoginUser({ variables: { email, password } });
+        this.setState({ loading: false }, () => {
+          const { loginUser } = response.data;
+          localStorage.setItem('Token', loginUser);
+          history.push('/trainee');
+        });
+      } catch (error) {
+        this.setState({ loading: false }, () => {
+          value.openSnackBar(error.message, 'error');
+        });
+      }
     });
   }
 
