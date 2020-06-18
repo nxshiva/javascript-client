@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
@@ -60,7 +61,7 @@ function TraineeTable(props) {
   const {
     id, data, columns, order,
     orderBy, onSort, onSelect, actions,
-    count, page, rowsPerPage, onChangePage, onChangeRowsPerPage, dataLength,
+    count, page, rowsPerPage, onChangePage, onChangeRowsPerPage, dataLength, loading,
   } = props;
   const classes = useStyles();
 
@@ -95,44 +96,58 @@ function TraineeTable(props) {
             <TableCell />
           </TableRow>
         </TableHead>
-        <TableBody>
-          {dataLength ? data.map((trainee) => (
-            <StyledTableRow
-              onClick={(event) => onSelect(event, trainee)}
-              key={trainee[id]}
-            >
-              {
-                columns && columns.length && columns.map(({ field, align, format }) => (
-                  <TableCell align={align}>
-                    {format ? format(trainee[field]) : trainee[field]}
-                  </TableCell>
-                ))
-              }
-              <TableCell>
-                {
-                  actions && actions.length && actions.map(({ icon, handler }) => (
-                    <div>
-                      <Button onClick={() => { handler(trainee); }}>
-                        {icon}
-                      </Button>
-                    </div>
-                  ))
-                }
-              </TableCell>
-            </StyledTableRow>
-          )) : (
+        {loading ? (
+          <TableBody>
             <TableRow>
               <TableCell align="center" colSpan={4}>
                 <div align="center">
-                  <h1>
-                    OOPS!, No More Trainees
-                  </h1>
+                  <CircularProgress color="secondary" />
                 </div>
               </TableCell>
 
             </TableRow>
-          )}
-        </TableBody>
+          </TableBody>
+        ) : (
+          <TableBody>
+            {dataLength ? data.map((trainee) => (
+              <StyledTableRow
+                onClick={(event) => onSelect(event, trainee)}
+                key={trainee[id]}
+              >
+                {
+                  columns && columns.length && columns.map(({ field, align, format }) => (
+                    <TableCell align={align}>
+                      {format ? format(trainee[field]) : trainee[field]}
+                    </TableCell>
+                  ))
+                }
+                <TableCell>
+                  {
+                    actions && actions.length && actions.map(({ icon, handler }) => (
+                      <div>
+                        <Button onClick={() => { handler(trainee); }}>
+                          {icon}
+                        </Button>
+                      </div>
+                    ))
+                  }
+                </TableCell>
+              </StyledTableRow>
+            )) : (
+              <TableRow>
+                <TableCell align="center" colSpan={4}>
+                  <div align="center">
+                    <h1>
+                      OOPS!, No More Trainees
+                    </h1>
+                  </div>
+                </TableCell>
+
+              </TableRow>
+            )}
+          </TableBody>
+        )}
+
       </Table>
       <TablePagination
         rowsPerPageOptions={[5, 10, 15, 20, 25]}
@@ -167,4 +182,5 @@ TraineeTable.propTypes = {
   onChangePage: PropTypes.func.isRequired,
   onChangeRowsPerPage: PropTypes.func.isRequired,
   dataLength: PropTypes.number.isRequired,
+  loading: PropTypes.bool.isRequired,
 };

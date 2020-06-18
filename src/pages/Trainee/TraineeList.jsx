@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { compose } from 'recompose';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -7,14 +8,16 @@ import {
   Link,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Mutation } from '@apollo/react-components';
 import * as moment from 'moment';
-// import CircularProgress from '@material-ui/core/CircularProgress';
+import { graphql } from '@apollo/react-hoc';
 import {
   AddDialog, TraineeTable, DeleteDialog, EditDialog,
 } from './Components/index';
 import trainees from './Data/trainee';
-import callApi from '../../lib/utils/api';
 import { MyContext } from '../../contexts';
+import { GET_TRAINEE } from './query';
+import { CREATE_TRAINEE, EDIT_TRAINEE, DELETE_TRAINEE } from './mutation';
 
 
 const useStyles = (theme) => ({
@@ -54,15 +57,12 @@ class Trainee extends Component {
       orderBy: '',
       page: 0,
       rowsPerPage: 20,
-      count: 0,
-      tableData: [],
-      loading: false,
     };
   }
 
-  componentDidMount(event) {
-    this.handleChangePage(event, 0);
-  }
+  // componentDidMount(event) {
+  //   this.handleChangePage(event, 0);
+  // }
 
   date = (date) => moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
 
@@ -94,34 +94,21 @@ class Trainee extends Component {
     this.setState({ openDelete, data });
   }
 
-  handleChangePage = (event, newPage) => {
+  handleChangePage = (refetch) => (event, newPage) => {
     const { rowsPerPage } = this.state;
-    this.setState({ page: newPage, loading: true }, async () => {
-      const { page } = this.state;
-      const response = await callApi('get', 'trainee', {
-        limit: rowsPerPage,
-        skip: page * rowsPerPage,
-      });
-
-      this.setState({ loading: false }, () => {
-        if (response.status === 'ok') {
-          this.setState({ count: response.data.count, tableData: response.data.records });
-        } else {
-          const value = this.context;
-          value.openSnackBar(response.message, response.status);
-        }
-      });
+    this.setState({ page: newPage }, () => {
+      refetch({ limit: rowsPerPage, skip: rowsPerPage * newPage });
     });
   }
 
-  handleChangeRowsPerPage = (event) => {
+  handleChangeRowsPerPage = (refetch) => (event) => {
     this.setState({
       rowsPerPage: event.target.value,
       page: 0,
 
     }, () => {
-      const { page } = this.state;
-      this.handleChangePage(event, page);
+      const { page, rowsPerPage } = this.state;
+      refetch({ limit: rowsPerPage, skip: rowsPerPage * page });
     });
   };
 
@@ -136,35 +123,69 @@ class Trainee extends Component {
     return true;
   }
 
-  onSubmit = (state, data) => {
-    const { page } = this.state;
-    this.setState({ [state]: false, data: {} }, (event) => {
-      this.handleChangePage(event, page);
-      console.log('Data Submitted', data);
-    });
-    return true;
+  onCreateSubmit = (openSnackbar, createTrainee) => async (data) => {
+    try {
+      console.log('Create Data', data);
+      const response = await createTrainee({ variables: data });
+      console.log('Response', response);
+      this.setState({ open: false }, () => {
+        openSnackbar('Trainee Added Successfully', 'success');
+      });
+    } catch (error) {
+      openSnackbar(error.message, 'error');
+    }
   }
 
-  onSubmitDelete = (data) => {
-    const { rowsPerPage, count, page } = this.state;
+  onEditSubmit = (openSnackbar, updateTrainee) => (data) => {
+    console.log('Edit Data', data);
+    updateTrainee({ variables: data }).then((response) => {
+      console.log('Response', response);
+      this.setState({ openEdit: false, data: {} }, () => {
+        openSnackbar('Trainee Updated Successfully', 'success');
+      });
+    }).catch((error) => {
+      openSnackbar(error.message, 'error');
+    });
+  }
+
+  onDeleteSubmit = (openSnackbar, deleteTrainee, refetch, count) => (data) => {
+    const { rowsPerPage, page } = this.state;
     const result = count - (page * rowsPerPage);
-    this.setState({ openDelete: false, data: {} }, (event) => {
-      console.log('Data Submitted', data);
+    console.log('Delete Data', data);
+    deleteTrainee({ variables: data }).then((response) => {
+      console.log('Response', response);
       if (result === 1 && page > 0) {
-        this.handleChangePage(event, (page - 1));
+        this.setState({ openDelete: false, data: {}, page: (page - 1) }, () => {
+          refetch({ limit: rowsPerPage, skip: rowsPerPage * (page - 1) });
+        });
       } else {
-        this.handleChangePage(event, (page));
+        this.setState({ openDelete: false, data: {} }, () => {
+          refetch({ limit: rowsPerPage, skip: rowsPerPage * page });
+        });
       }
+      openSnackbar('Trainee deleted Successfully', 'success');
+    }).catch((error) => {
+      openSnackbar(error.message, 'error');
     });
   }
 
   render() {
     const {
       open, order, orderBy, openEdit, data, openDelete, page,
-      rowsPerPage, loading, count, tableData,
+      rowsPerPage,
     } = this.state;
     const { match: { url } } = this.props;
-    const { classes } = this.props;
+    const {
+      classes,
+      data: {
+        getAllTrainee: { count = 0, records = [] } = {},
+        refetch,
+        loading,
+      },
+    } = this.props;
+
+    const variables = { limit: rowsPerPage, skip: rowsPerPage * page };
+    const { openSnackBar } = this.context;
     return (
       <div className={classes.paper}>
         <div className={classes.buttonPosition}>
@@ -172,22 +193,47 @@ class Trainee extends Component {
             ADD TRAINEEList
           </Button>
         </div>
-        <AddDialog open={open} onClose={() => this.onClose} onSubmit={() => this.onSubmit} />
-        <EditDialog
-          open={openEdit}
-          trainee={data}
-          onClose={() => this.onClose}
-          onSubmit={() => this.onSubmit}
-        />
-        <DeleteDialog
-          open={openDelete}
-          trainee={data}
-          onClose={() => this.onClose}
-          onSubmit={() => this.onSubmitDelete}
-        />
+        <Mutation mutation={CREATE_TRAINEE} refetchQueries={[{ query: GET_TRAINEE, variables }]}>
+          {(createTrainee, loader = { loading }) => (
+            <>
+              <AddDialog
+                open={open}
+                onClose={() => this.onClose}
+                onSubmit={this.onCreateSubmit(openSnackBar, createTrainee)}
+                loader={loader}
+              />
+            </>
+          )}
+        </Mutation>
+        <Mutation mutation={EDIT_TRAINEE} refetchQueries={[{ query: GET_TRAINEE, variables }]}>
+          {(updateTrainee, loader = { loading }) => (
+            <>
+              <EditDialog
+                open={openEdit}
+                trainee={data}
+                onClose={() => this.onClose}
+                onSubmit={this.onEditSubmit(openSnackBar, updateTrainee)}
+                loader={loader}
+              />
+            </>
+          )}
+        </Mutation>
+        <Mutation mutation={DELETE_TRAINEE}>
+          {(deleteTrainee, loader = { loading }) => (
+            <>
+              <DeleteDialog
+                open={openDelete}
+                trainee={data}
+                onClose={() => this.onClose}
+                onSubmit={this.onDeleteSubmit(openSnackBar, deleteTrainee, refetch, count)}
+                loader={loader}
+              />
+            </>
+          )}
+        </Mutation>
         <TraineeTable
           id="id"
-          data={tableData}
+          data={records}
           columns={
             [
               {
@@ -228,10 +274,10 @@ class Trainee extends Component {
           count={count}
           page={page}
           rowsPerPage={rowsPerPage}
-          onChangePage={this.handleChangePage}
-          onChangeRowsPerPage={this.handleChangeRowsPerPage}
+          onChangePage={this.handleChangePage(refetch)}
+          onChangeRowsPerPage={this.handleChangeRowsPerPage(refetch)}
           loading={loading}
-          dataLength={tableData.length}
+          dataLength={records.length}
         />
         <ul>
           {
@@ -249,10 +295,16 @@ class Trainee extends Component {
   }
 }
 
-export default withStyles(useStyles)(Trainee);
+export default compose(
+  withStyles(useStyles),
+  graphql(GET_TRAINEE, {
+    options: { variables: { limit: 20, skip: 0 } },
+  }),
+)(Trainee);
 Trainee.contextType = MyContext;
 
 Trainee.propTypes = {
   match: PropTypes.objectOf(PropTypes.any).isRequired,
   classes: PropTypes.objectOf(PropTypes.any).isRequired,
+  data: PropTypes.objectOf(PropTypes.any).isRequired,
 };
