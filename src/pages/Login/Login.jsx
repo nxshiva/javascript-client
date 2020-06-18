@@ -64,10 +64,9 @@ class Login extends Component {
     };
   }
 
-  fetchData = (value) => {
+  fetchData = (openSnackBar) => {
     const { email, password } = this.state;
     const { LoginUser, history } = this.props;
-
     this.setState({ loading: true }, async () => {
       try {
         const response = await LoginUser({ variables: { email, password } });
@@ -78,7 +77,7 @@ class Login extends Component {
         });
       } catch (error) {
         this.setState({ loading: false }, () => {
-          value.openSnackBar(error.message, 'error');
+          openSnackBar(error.message, 'error');
         });
       }
     });
@@ -200,7 +199,7 @@ class Login extends Component {
                     color="primary"
                     className={classes.submit}
                     disabled={loading || this.hasErrors()}
-                    onClick={() => { this.fetchData(value); }}
+                    onClick={() => { this.fetchData(value.openSnackBar); }}
                   >
                     {loading && (
                       <CircularProgress color="secondary" />

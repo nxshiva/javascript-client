@@ -8,6 +8,7 @@ import {
   Link,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Mutation } from '@apollo/react-components';
 import * as moment from 'moment';
 import { graphql } from '@apollo/react-hoc';
 import {
@@ -16,6 +17,7 @@ import {
 import trainees from './Data/trainee';
 import { MyContext } from '../../contexts';
 import { GET_TRAINEE } from './query';
+import { CREATE_TRAINEE, EDIT_TRAINEE, DELETE_TRAINEE } from './mutation';
 
 
 const useStyles = (theme) => ({
@@ -99,14 +101,14 @@ class Trainee extends Component {
     });
   }
 
-  handleChangeRowsPerPage = (event) => {
+  handleChangeRowsPerPage = (refetch) => (event) => {
     this.setState({
       rowsPerPage: event.target.value,
       page: 0,
 
     }, () => {
-      const { page } = this.state;
-      this.handleChangePage(event, page);
+      const { page, rowsPerPage } = this.state;
+      refetch({ limit: rowsPerPage, skip: rowsPerPage * page });
     });
   };
 
@@ -121,25 +123,49 @@ class Trainee extends Component {
     return true;
   }
 
-  onSubmit = (state, data) => {
-    const { page } = this.state;
-    this.setState({ [state]: false, data: {} }, (event) => {
-      this.handleChangePage(event, page);
-      console.log('Data Submitted', data);
-    });
-    return true;
+  onCreateSubmit = (openSnackbar, createTrainee) => async (data) => {
+    try {
+      console.log('Create Data', data);
+      const response = await createTrainee({ variables: data });
+      console.log('Response', response);
+      this.setState({ open: false }, () => {
+        openSnackbar('Trainee Added Successfully', 'success');
+      });
+    } catch (error) {
+      openSnackbar(error.message, 'error');
+    }
   }
 
-  onSubmitDelete = (data) => {
-    const { rowsPerPage, count, page } = this.state;
+  onEditSubmit = (openSnackbar, updateTrainee) => (data) => {
+    console.log('Edit Data', data);
+    updateTrainee({ variables: data }).then((response) => {
+      console.log('Response', response);
+      this.setState({ openEdit: false, data: {} }, () => {
+        openSnackbar('Trainee Updated Successfully', 'success');
+      });
+    }).catch((error) => {
+      openSnackbar(error.message, 'error');
+    });
+  }
+
+  onDeleteSubmit = (openSnackbar, deleteTrainee, refetch, count) => (data) => {
+    const { rowsPerPage, page } = this.state;
     const result = count - (page * rowsPerPage);
-    this.setState({ openDelete: false, data: {} }, (event) => {
-      console.log('Data Submitted', data);
+    console.log('Delete Data', data);
+    deleteTrainee({ variables: data }).then((response) => {
+      console.log('Response', response);
       if (result === 1 && page > 0) {
-        this.handleChangePage(event, (page - 1));
+        this.setState({ openDelete: false, data: {}, page: (page - 1) }, () => {
+          refetch({ limit: rowsPerPage, skip: rowsPerPage * (page - 1) });
+        });
       } else {
-        this.handleChangePage(event, (page));
+        this.setState({ openDelete: false, data: {} }, () => {
+          refetch({ limit: rowsPerPage, skip: rowsPerPage * page });
+        });
       }
+      openSnackbar('Trainee deleted Successfully', 'success');
+    }).catch((error) => {
+      openSnackbar(error.message, 'error');
     });
   }
 
@@ -157,6 +183,9 @@ class Trainee extends Component {
         loading,
       },
     } = this.props;
+
+    const variables = { limit: rowsPerPage, skip: rowsPerPage * page };
+    const { openSnackBar } = this.context;
     return (
       <div className={classes.paper}>
         <div className={classes.buttonPosition}>
@@ -164,19 +193,44 @@ class Trainee extends Component {
             ADD TRAINEEList
           </Button>
         </div>
-        <AddDialog open={open} onClose={() => this.onClose} onSubmit={() => this.onSubmit} />
-        <EditDialog
-          open={openEdit}
-          trainee={data}
-          onClose={() => this.onClose}
-          onSubmit={() => this.onSubmit}
-        />
-        <DeleteDialog
-          open={openDelete}
-          trainee={data}
-          onClose={() => this.onClose}
-          onSubmit={() => this.onSubmitDelete}
-        />
+        <Mutation mutation={CREATE_TRAINEE} refetchQueries={[{ query: GET_TRAINEE, variables }]}>
+          {(createTrainee, loader = { loading }) => (
+            <>
+              <AddDialog
+                open={open}
+                onClose={() => this.onClose}
+                onSubmit={this.onCreateSubmit(openSnackBar, createTrainee)}
+                loader={loader}
+              />
+            </>
+          )}
+        </Mutation>
+        <Mutation mutation={EDIT_TRAINEE} refetchQueries={[{ query: GET_TRAINEE, variables }]}>
+          {(updateTrainee, loader = { loading }) => (
+            <>
+              <EditDialog
+                open={openEdit}
+                trainee={data}
+                onClose={() => this.onClose}
+                onSubmit={this.onEditSubmit(openSnackBar, updateTrainee)}
+                loader={loader}
+              />
+            </>
+          )}
+        </Mutation>
+        <Mutation mutation={DELETE_TRAINEE}>
+          {(deleteTrainee, loader = { loading }) => (
+            <>
+              <DeleteDialog
+                open={openDelete}
+                trainee={data}
+                onClose={() => this.onClose}
+                onSubmit={this.onDeleteSubmit(openSnackBar, deleteTrainee, refetch, count)}
+                loader={loader}
+              />
+            </>
+          )}
+        </Mutation>
         <TraineeTable
           id="id"
           data={records}
@@ -221,7 +275,7 @@ class Trainee extends Component {
           page={page}
           rowsPerPage={rowsPerPage}
           onChangePage={this.handleChangePage(refetch)}
-          onChangeRowsPerPage={this.handleChangeRowsPerPage}
+          onChangeRowsPerPage={this.handleChangeRowsPerPage(refetch)}
           loading={loading}
           dataLength={records.length}
         />
@@ -244,7 +298,7 @@ class Trainee extends Component {
 export default compose(
   withStyles(useStyles),
   graphql(GET_TRAINEE, {
-    options: { variables: { limit: 5, skip: 0 } },
+    options: { variables: { limit: 20, skip: 0 } },
   }),
 )(Trainee);
 Trainee.contextType = MyContext;

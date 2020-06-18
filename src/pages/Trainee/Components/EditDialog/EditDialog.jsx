@@ -14,9 +14,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
 import EmailIcon from '@material-ui/icons/Email';
 import Grid from '@material-ui/core/Grid';
-import callApi from '../../../../lib/utils/api';
-
-import { MyContext } from '../../../../contexts';
 
 const schema = yup.object().shape({
   name: yup.string().required('Name is required').min(3),
@@ -35,7 +32,6 @@ class EditDialog extends Component {
     this.state = {
       name: '',
       email: '',
-      loading: false,
       error: {
         name: '',
         email: '',
@@ -46,32 +42,6 @@ class EditDialog extends Component {
       },
     };
     this.baseState = this.state;
-  }
-
-  fetchData = (value) => {
-    const {
-      name, email,
-    } = this.state;
-    const { onSubmit, trainee } = this.props;
-    this.setState({ loading: true }, async () => {
-      const response = await callApi('put', 'trainee', {
-        name,
-        email,
-        // password: 'Training@123',
-        id: trainee.originalId,
-      });
-      this.setState({ loading: false }, () => {
-        if (response.status === 'ok') {
-          onSubmit()('openEdit', {
-            name, email,
-          });
-          this.resetForm();
-          value.openSnackBar(response.message, 'success');
-        } else {
-          value.openSnackBar(response.message, response.status);
-        }
-      });
-    });
   }
 
   resetForm = () => {
@@ -150,10 +120,10 @@ class EditDialog extends Component {
   render() {
     const { classes } = this.props;
     const {
-      open, onClose, trainee,
+      open, onClose, trainee, onSubmit, loader: { loading },
     } = this.props;
     const {
-      error, loading,
+      error, name, email,
     } = this.state;
     return (
       <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
@@ -204,24 +174,24 @@ class EditDialog extends Component {
           >
             Cancel
           </Button>
-          <MyContext.Consumer>
-            {(value) => (
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={loading || this.hasErrors()}
-                onClick={() => {
-                  this.fetchData(value);
-                }}
-              >
-                {loading && (
-                  <CircularProgress color="secondary" />
-                )}
-                {loading && <span> Adding....</span>}
-                {!loading && <span>Submit</span>}
-              </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={loading || this.hasErrors()}
+            onClick={() => {
+              onSubmit({
+                id: trainee.originalId,
+                name,
+                email,
+              });
+            }}
+          >
+            {loading && (
+              <CircularProgress color="secondary" />
             )}
-          </MyContext.Consumer>
+            {loading && <span> Updating....</span>}
+            {!loading && <span>Update</span>}
+          </Button>
 
         </DialogActions>
       </Dialog>
@@ -237,4 +207,5 @@ EditDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   trainee: PropTypes.objectOf(PropTypes.any).isRequired,
+  loader: PropTypes.objectOf(PropTypes.any).isRequired,
 };

@@ -13,12 +13,8 @@ import PersonIcon from '@material-ui/icons/Person';
 import PropTypes from 'prop-types';
 import EmailIcon from '@material-ui/icons/Email';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Grid from '@material-ui/core/Grid';
-import callApi from '../../../../lib/utils/api';
-
-import { MyContext } from '../../../../contexts/index';
 
 const schema = yup.object().shape({
   name: yup.string().required('Name is required').min(3),
@@ -42,7 +38,6 @@ class AddDialog extends Component {
       email: '',
       password: '',
       confirmPassword: '',
-      loading: false,
       error: {
         name: '',
         email: '',
@@ -59,31 +54,6 @@ class AddDialog extends Component {
     this.baseState = this.state;
   }
 
-  fetchData = (value) => {
-    const {
-      name, email, password,
-      confirmPassword,
-    } = this.state;
-    const { onSubmit } = this.props;
-    this.setState({ loading: true }, async () => {
-      const response = await callApi('post', 'trainee', {
-        name,
-        email,
-        password,
-      });
-      this.setState({ loading: false }, () => {
-        if (response.status === 'ok') {
-          onSubmit()('open', {
-            name, email, password, confirmPassword,
-          });
-          this.resetForm();
-          value.openSnackBar(response.message, 'success');
-        } else {
-          value.openSnackBar(response.message, response.status);
-        }
-      });
-    });
-  }
 
   resetForm = () => {
     if (JSON.stringify(this.state) !== JSON.stringify(this.baseState)) {
@@ -152,11 +122,13 @@ class AddDialog extends Component {
 
   render() {
     const { classes } = this.props;
-    const { open, onClose } = this.props;
     const {
-      name, email, password, confirmPassword, error, loading,
+      open, onClose,
+      onSubmit, loader: { loading },
+    } = this.props;
+    const {
+      name, email, password, confirmPassword, error,
     } = this.state;
-    // console.log(this.state);
     return (
       <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Add TRAINEE</DialogTitle>
@@ -240,24 +212,21 @@ class AddDialog extends Component {
           >
             Cancel
           </Button>
-          <MyContext.Consumer>
-            {(value) => (
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={loading || this.hasErrors()}
-                onClick={() => {
-                  this.fetchData(value);
-                }}
-              >
-                {loading && (
-                  <CircularProgress color="secondary" />
-                )}
-                {loading && <span> Adding....</span>}
-                {!loading && <span>Submit</span>}
-              </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={loading || this.hasErrors()}
+            onClick={async () => {
+              await onSubmit({ name, email, password: confirmPassword });
+              this.resetForm();
+            }}
+          >
+            {loading && (
+              <CircularProgress color="secondary" />
             )}
-          </MyContext.Consumer>
+            {loading && <span> Adding....</span>}
+            {!loading && <span>Submit</span>}
+          </Button>
         </DialogActions>
       </Dialog>
     );
@@ -271,4 +240,5 @@ AddDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  loader: PropTypes.objectOf(PropTypes.any).isRequired,
 };
