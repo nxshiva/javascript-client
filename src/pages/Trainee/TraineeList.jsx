@@ -18,7 +18,7 @@ import trainees from './Data/trainee';
 import { MyContext } from '../../contexts';
 import { GET_TRAINEE } from './query';
 import { CREATE_TRAINEE, EDIT_TRAINEE, DELETE_TRAINEE } from './mutation';
-
+import { UPDATED_TRAINEE_SUB, DELETED_TRAINEE_SUB } from './subscription';
 
 const useStyles = (theme) => ({
   button: {
@@ -56,13 +56,59 @@ class Trainee extends Component {
       order: 'asc',
       orderBy: '',
       page: 0,
-      rowsPerPage: 20,
+      rowsPerPage: 10,
     };
   }
 
-  // componentDidMount(event) {
-  //   this.handleChangePage(event, 0);
-  // }
+  componentDidMount() {
+    const { data: { subscribeToMore } } = this.props;
+    subscribeToMore({
+      document: UPDATED_TRAINEE_SUB,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData) {
+          return prev;
+        }
+        const { getAllTrainee: { records } } = prev;
+        const { data: { traineeUpdated } } = subscriptionData;
+        const updatedRecords = [...records].map((record) => {
+          if (record.originalId === traineeUpdated.originalId) {
+            return {
+              ...record,
+              ...traineeUpdated,
+            };
+          }
+          return record;
+        });
+        return {
+          getAllTrainee: {
+            ...prev.getAllTrainee,
+            count: prev.getAllTrainee.count,
+            records: updatedRecords,
+          },
+        };
+      },
+    });
+
+    subscribeToMore({
+      document: DELETED_TRAINEE_SUB,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData) {
+          return prev;
+        }
+        const { getAllTrainee: { records } } = prev;
+        const { data: { traineeDeleted } } = subscriptionData;
+        // eslint-disable-next-line max-len
+        const updatedRecords = [...records].filter((record) => record.originalId !== traineeDeleted);
+        return {
+          getAllTrainee: {
+            ...prev.getAllTrainee,
+            count: prev.getAllTrainee.count - 1,
+            records: updatedRecords,
+          },
+        };
+      },
+    });
+  }
 
   date = (date) => moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
 
@@ -148,22 +194,29 @@ class Trainee extends Component {
     });
   }
 
-  onDeleteSubmit = (openSnackbar, deleteTrainee, refetch, count) => (data) => {
+  onDeleteSubmit = (openSnackbar, deleteTrainee) => (data) => {
     const { rowsPerPage, page } = this.state;
+    const {
+      data: {
+        getAllTrainee: { count = 0 } = {},
+        refetch,
+      },
+    } = this.props;
     const result = count - (page * rowsPerPage);
     console.log('Delete Data', data);
     deleteTrainee({ variables: data }).then((response) => {
       console.log('Response', response);
       if (result === 1 && page > 0) {
-        this.setState({ openDelete: false, data: {}, page: (page - 1) }, () => {
+        this.setState({ openDelete: false, data: {}, page: page - 1 }, () => {
           refetch({ limit: rowsPerPage, skip: rowsPerPage * (page - 1) });
+          openSnackbar('Trainee Deleted Successfully', 'success');
         });
       } else {
         this.setState({ openDelete: false, data: {} }, () => {
           refetch({ limit: rowsPerPage, skip: rowsPerPage * page });
+          openSnackbar('Trainee Deleted Successfully', 'success');
         });
       }
-      openSnackbar('Trainee deleted Successfully', 'success');
     }).catch((error) => {
       openSnackbar(error.message, 'error');
     });
@@ -174,6 +227,7 @@ class Trainee extends Component {
       open, order, orderBy, openEdit, data, openDelete, page,
       rowsPerPage,
     } = this.state;
+    console.log('Render called');
     const { match: { url } } = this.props;
     const {
       classes,
@@ -205,7 +259,7 @@ class Trainee extends Component {
             </>
           )}
         </Mutation>
-        <Mutation mutation={EDIT_TRAINEE} refetchQueries={[{ query: GET_TRAINEE, variables }]}>
+        <Mutation mutation={EDIT_TRAINEE}>
           {(updateTrainee, loader = { loading }) => (
             <>
               <EditDialog
@@ -225,14 +279,14 @@ class Trainee extends Component {
                 open={openDelete}
                 trainee={data}
                 onClose={() => this.onClose}
-                onSubmit={this.onDeleteSubmit(openSnackBar, deleteTrainee, refetch, count)}
+                onSubmit={this.onDeleteSubmit(openSnackBar, deleteTrainee)}
                 loader={loader}
               />
             </>
           )}
         </Mutation>
         <TraineeTable
-          id="id"
+          id="_id"
           data={records}
           columns={
             [
@@ -260,10 +314,12 @@ class Trainee extends Component {
               {
                 icon: <EditIcon />,
                 handler: this.handleEditDialogOpen,
+                key: 1,
               },
               {
                 icon: <DeleteIcon />,
                 handler: this.handleDeleteDialogOpen,
+                key: 2,
               },
             ]
           }
@@ -298,7 +354,7 @@ class Trainee extends Component {
 export default compose(
   withStyles(useStyles),
   graphql(GET_TRAINEE, {
-    options: { variables: { limit: 20, skip: 0 } },
+    options: { variables: { limit: 10, skip: 0 } },
   }),
 )(Trainee);
 Trainee.contextType = MyContext;

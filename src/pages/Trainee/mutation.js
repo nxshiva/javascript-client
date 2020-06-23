@@ -12,7 +12,11 @@ mutation CreateTrainee($name: String!, $email: String!, $password: String!) {
 
 const EDIT_TRAINEE = gql`
 mutation EditTrainee($id: ID!, $name: String!, $email: String!) {
-  updateTrainee(payload: { id: $id, name: $name, email: $email })
+  updateTrainee(payload: { id: $id, name: $name, email: $email }){
+    originalId
+    name
+    email
+  }
 }
 `;
 

@@ -57,7 +57,7 @@ function TraineeDetail(props) {
   const { id } = useParams();
   const history = useHistory();
   if (trainees.length) {
-    trainees.map((trainee) => {
+    trainees.forEach((trainee) => {
       if (id === trainee.id) {
         check = true;
         matchTrainee = trainee;
