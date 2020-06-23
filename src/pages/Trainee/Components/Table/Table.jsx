@@ -77,7 +77,7 @@ function TraineeTable(props) {
           <TableRow>
             {
               columns && columns.length && columns.map(({ label, align }) => (
-                <TableCell align={align} className={classes.column}>
+                <TableCell align={align} className={classes.column} key={label}>
                   <TableSortLabel
                     active={orderBy === label}
                     direction={orderBy === label ? order : 'asc'}
@@ -116,15 +116,15 @@ function TraineeTable(props) {
               >
                 {
                   columns && columns.length && columns.map(({ field, align, format }) => (
-                    <TableCell align={align}>
+                    <TableCell align={align} key={field}>
                       {format ? format(trainee[field]) : trainee[field]}
                     </TableCell>
                   ))
                 }
                 <TableCell>
                   {
-                    actions && actions.length && actions.map(({ icon, handler }) => (
-                      <div>
+                    actions && actions.length && actions.map(({ icon, handler, key }) => (
+                      <div key={key}>
                         <Button onClick={() => { handler(trainee); }}>
                           {icon}
                         </Button>
